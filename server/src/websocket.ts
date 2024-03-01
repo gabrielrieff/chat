@@ -4,6 +4,13 @@ type RoomUser = {
   socket_id: string;
   userName: string;
   room: string;
+};
+
+type messegeUser = {
+  socket_id: string;
+  userName: string;
+  room: string;
+  messege: string;
   color: string;
 };
 
@@ -11,8 +18,6 @@ const users: Array<RoomUser> = [];
 
 io.on("connection", (socket) => {
   socket.on("select_room", (data) => {
-    console.log(data);
-
     socket.join(data.room);
 
     const userInRoom = users.find(
@@ -26,24 +31,18 @@ io.on("connection", (socket) => {
         socket_id: socket.id,
         userName: data.userName,
         room: data.room,
-        color: data.color,
       });
     }
 
     console.log(users);
   });
 
-  socket.on("messege", (messege) => {
-    io.emit("receive_messege", {
-      messege,
-      userID: socket.id,
-      userName: socket.data.userName,
-      color: socket.data.userColor,
-      room: socket.data.room,
-    });
+  socket.on("messege", (data: messegeUser) => {
+    console.log(data);
+    io.to(data.room).emit("receive_messege", data);
   });
 
-  // socket.on("disconnect", (reason) => {
-  //   console.log("Usuário desconectado!", socket.id);
-  // });
+  socket.on("disconnect", (reason) => {
+    console.log("Usuário desconectado!", socket.id);
+  });
 });
