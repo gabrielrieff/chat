@@ -2,13 +2,21 @@ import { FormEvent, useEffect, useState } from "react";
 import { IoSend } from "react-icons/io5";
 
 type messegeType = {
-  userID: string;
-  userName: string;
   messege: string;
-  userColor: string;
+  socket_id: string;
+  userName: string;
+  color: string;
+  room: string;
 };
 
-export const Chat = ({ socket }: any) => {
+type ChatParams = {
+  socket: any;
+  userName: string;
+  color: string;
+  room: string;
+};
+
+export const Chat = ({ socket, room, userName, color }: ChatParams) => {
   const [userMessege, setUserMessege] = useState("");
   const [messegeList, setMessegeList] = useState<Array<messegeType> | []>([]);
 
@@ -16,11 +24,18 @@ export const Chat = ({ socket }: any) => {
     event.preventDefault();
     if (!userMessege.trim()) return;
 
-    await socket.emit("messege", userMessege);
+    const data = {
+      messege: userMessege,
+      userName: userName,
+      socket_id: socket.id,
+      room: room,
+      color: color,
+    };
+    socket.emit("messege", data);
 
     setUserMessege("");
   };
-
+  console.log(messegeList);
   useEffect(() => {
     socket.on("receive_messege", (data: messegeType) => {
       setMessegeList((current) => [...current, data]);
@@ -33,7 +48,7 @@ export const Chat = ({ socket }: any) => {
     <section className="h-full max-w-[1220px] min-w-[500px] flex flex-col items-center justify-between">
       <div>
         <div className="bg-green-700 text-white px-2 py-3 rounded-lg rounded-b-none">
-          Sala X
+          {room}
         </div>
         <div className="h-[700px] bg-chat bg-no-repeat bg-cover bg-center w-[500px] rounded-lg rounded-t-none border border-spacing-1 p-5 pr-0 flex flex-col justify-end">
           <div className="overflow-y-auto overflow-x-hidden pr-5 flex flex-col gap-3">
@@ -41,13 +56,13 @@ export const Chat = ({ socket }: any) => {
               <div
                 key={index}
                 className={`flex flex-col ${
-                  messege.userID == socket.id
+                  messege.socket_id === socket.id
                     ? "items-end bg-green-100 p-2 rounded-lg max-w-[48%] self-end"
                     : "items-start bg-slate-200 p-2 rounded-lg max-w-[48%] self-start"
                 }`}
               >
-                {messege.userID !== socket.id ? (
-                  <p className={`${messege.userColor} font-semibold`}>
+                {messege.socket_id !== socket.id ? (
+                  <p className={`${messege.color} font-semibold`}>
                     ~ {messege.userName}
                   </p>
                 ) : (
