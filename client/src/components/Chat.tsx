@@ -60,7 +60,7 @@ export const Chat = ({ socket, room, userName, color }: ChatParams) => {
         <div className="bg-zinc-100 w-full h-[6%] p-1">
           {currentEmoji || room} - {room}
         </div>
-        <div className="h-[94%] bg-chat bg-repeat bg-center pr-0 flex flex-col justify-end">
+        <div className="h-[94%] bg-chat bg-repeat bg-center pr-0 flex flex-col justify-end relative">
           <div className="overflow-y-auto overflow-x-hidden pr-5 flex flex-col gap-3">
             {messegeList.map((messege, index) => (
               <div
@@ -95,16 +95,20 @@ export const Chat = ({ socket, room, userName, color }: ChatParams) => {
               <BsEmojiSunglasses size={25} />
             </button>
 
-            <div className={isPickerVisible ? "block" : "none"}>
-              <Picker
-                data={data}
-                previewPosition="top"
-                onEmojiSelect={(e) => {
-                  setCurrentEmoji(e.native);
-                  setIsPickerVisible(!isPickerVisible);
-                }}
-              />
-            </div>
+            {isPickerVisible && (
+              <div className="absolute bottom-16 left-4">
+                <Picker
+                  data={data}
+                  emojiSize={25}
+                  emojiButtonSize={28}
+                  previewPosition="none"
+                  onEmojiSelect={(e) => {
+                    setCurrentEmoji(e.native);
+                    setIsPickerVisible(!isPickerVisible);
+                  }}
+                />
+              </div>
+            )}
             <textarea
               value={userMessege}
               placeholder="Mensagem"
