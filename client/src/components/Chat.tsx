@@ -1,5 +1,9 @@
 import { FormEvent, useEffect, useState } from "react";
+import { BsEmojiSunglasses } from "react-icons/bs";
 import { IoSend } from "react-icons/io5";
+
+import Picker from "@emoji-mart/react";
+import data from "@emoji-mart/data";
 
 type messegeType = {
   messege: string;
@@ -20,6 +24,9 @@ export const Chat = ({ socket, room, userName, color }: ChatParams) => {
   const [userMessege, setUserMessege] = useState("");
   const [messegeList, setMessegeList] = useState<Array<messegeType> | []>([]);
 
+  const [isPickerVisible, setIsPickerVisible] = useState(false);
+  const [currentEmoji, setCurrentEmoji] = useState(null);
+
   const messege = async (event: FormEvent) => {
     event.preventDefault();
     if (!userMessege.trim()) return;
@@ -35,22 +42,25 @@ export const Chat = ({ socket, room, userName, color }: ChatParams) => {
 
     setUserMessege("");
   };
-  console.log(messegeList);
-  useEffect(() => {
-    socket.on("receive_messege", (data: messegeType) => {
-      setMessegeList((current) => [...current, data]);
-    });
+  // useEffect(() => {
+  //   socket.on("receive_messege", (data: messegeType) => {
+  //     setMessegeList((current) => [...current, data]);
+  //   });
 
-    return () => socket.off("receive_messege");
-  }, [socket]);
+  //   return () => socket.off("receive_messege");
+  // }, [socket]);
+
+  useEffect(() => {
+    console.log("true");
+  }, [isPickerVisible]);
 
   return (
-    <section className="h-full max-w-[1220px] min-w-[500px] flex flex-col items-center justify-between">
-      <div>
-        <div className="bg-green-700 text-white px-2 py-3 rounded-lg rounded-b-none">
-          {room}
+    <section className="h-full w-full flex flex-col items-center justify-between">
+      <div className="h-full w-full ">
+        <div className="bg-zinc-100 w-full h-[6%] p-1">
+          {currentEmoji || room} - {room}
         </div>
-        <div className="h-[700px] bg-chat bg-no-repeat bg-cover bg-center w-[500px] rounded-lg rounded-t-none border border-spacing-1 p-5 pr-0 flex flex-col justify-end">
+        <div className="h-[94%] bg-chat bg-repeat bg-center pr-0 flex flex-col justify-end">
           <div className="overflow-y-auto overflow-x-hidden pr-5 flex flex-col gap-3">
             {messegeList.map((messege, index) => (
               <div
@@ -76,8 +86,25 @@ export const Chat = ({ socket, room, userName, color }: ChatParams) => {
           </div>
           <form
             onSubmit={messege}
-            className="flex items-center justify-center gap-2 pr-5 mt-3"
+            className="flex items-center justify-center w-full h-16 gap-2 mt-3 bg-zinc-100 p-3"
           >
+            <button
+              className="hover:text-slate-400 text-zinc-500"
+              onClick={() => setIsPickerVisible(!isPickerVisible)}
+            >
+              <BsEmojiSunglasses size={25} />
+            </button>
+
+            <div className={isPickerVisible ? "block" : "none"}>
+              <Picker
+                data={data}
+                previewPosition="top"
+                onEmojiSelect={(e) => {
+                  setCurrentEmoji(e.native);
+                  setIsPickerVisible(!isPickerVisible);
+                }}
+              />
+            </div>
             <textarea
               value={userMessege}
               placeholder="Mensagem"

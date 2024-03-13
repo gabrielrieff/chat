@@ -1,9 +1,12 @@
 "use client";
 
+import Image from "next/image";
 import { FormEvent, useState } from "react";
 import { Chat } from "~/components/Chat";
 import { getRandomColorClass } from "~/helpers/getColors";
 import { socket } from "~/socket/socket";
+
+import foto from "../../public/perfil.jpeg";
 
 type socketUser = {
   userName: string;
@@ -13,8 +16,8 @@ type socketUser = {
 export default function Home() {
   const [socketInstance] = useState(socket());
 
-  const [userName, setUserName] = useState("");
-  const [roomName, setRoomName] = useState("");
+  const [userName, setUserName] = useState("Gabriel");
+  const [roomName, setRoomName] = useState("Node");
   const [color] = useState(getRandomColorClass());
   const [socketChat, setSocketChat] = useState<any>(null);
 
@@ -32,49 +35,59 @@ export default function Home() {
   };
 
   return (
-    <main className="flex h-screen flex-col items-center justify-between p-8 bg-blue-50">
-      {!socketChat ? (
-        <>
-          <form
-            onSubmit={connectSocket}
-            className="h-full w-[1280px] flex flex-col items-center justify-center gap-8"
-          >
-            <h1 className="text-3xl">Chat</h1>
-            <select
-              className="px-5 py-2 rounded-md w-[15%]"
-              onChange={(e) => setRoomName(e.target.value)}
-            >
-              <option>Selecione a sala</option>
-              <option value={"NodeJS"}>NodeJS</option>
-              <option value={"ReactJS"}>ReactJS</option>
-              <option value={"C#"}>C#</option>
-              <option value={"Javascript/Typescript"}>
-                Javascript/Typescript
-              </option>
-            </select>
-            <input
-              className="px-5 py-2 rounded-md w-[30%]"
-              type="text"
-              placeholder="Nome de usuário"
-              value={userName}
-              onChange={(e) => setUserName(e.target.value)}
-            />
-            <button
-              className="bg-green-600 text-white text-xl px-8 py-3 font-bold rounded-md w-[20%]"
-              type="submit"
-            >
-              Entrar
-            </button>
-          </form>
-        </>
-      ) : (
-        <Chat
-          socket={socketChat}
-          room={roomName}
-          userName={userName}
-          color={color}
-        />
-      )}
+    <main className="h-screen flex justify-center p-8 bg-stone-300">
+      <div className="w-4/5 h-full grid items-center grid-cols-4 grid-rows-1 ">
+        <section className="bg-white h-full">
+          <div className="h-[6%] bg-zinc-100 p-1 border-r-[1px] border-gray-400">
+            <span>Conversas</span>
+          </div>
+          <div className="h-[94%] p-3 overflow-auto">
+            {contacts.map((contect, index) => (
+              <div
+                className="flex items-center gap-3 p-2 border-b-[1px] border-gray-200 w-full mb-2 hover:bg-neutral-200 cursor-pointer transition-[.5s]"
+                key={index}
+              >
+                <Image
+                  alt=""
+                  src={foto}
+                  className="rounded-full w-16 h-16 object-cover"
+                />
+
+                <div className="flex flex-col">
+                  <span>{contect.name}</span>
+                  <span className="text-xs text-zinc-500">{contect.msg}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="w-full h-full col-span-3 bg-neutral-700">
+          <Chat
+            socket={socketChat}
+            room={roomName}
+            userName={userName}
+            color={color}
+          />
+        </section>
+      </div>
     </main>
   );
 }
+
+const contacts = [
+  { name: "Rafaela", msg: "Ola, tudo bem?" },
+  { name: "John", msg: "Ola, tudo bem?" },
+  { name: "Gabriel Rieff", msg: "Ola, tudo bem?" },
+  { name: "Maria joaquina", msg: "Ola, tudo bem?" },
+  { name: "Luiz otavio", msg: "Ola, tudo bem?" },
+  { name: "Naruto", msg: "Ola, tudo bem?" },
+  { name: "Ricardo", msg: "Ola, tudo bem?" },
+  { name: "Paulo", msg: "Ola, tudo bem?" },
+  { name: "Larissa", msg: "Ola, tudo bem?" },
+  { name: "Carlos", msg: "Ola, tudo bem?" },
+  { name: "Camila", msg: "Ola, tudo bem?" },
+  { name: "Rafael", msg: "Ola, tudo bem?" },
+  { name: "Lurdes", msg: "Ola, tudo bem?" },
+  { name: "Menino ney", msg: "Ola, tudo bem?" },
+];
