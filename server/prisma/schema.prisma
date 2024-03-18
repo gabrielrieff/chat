@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -16,4 +10,53 @@ datasource db {
 model User {
   id String @id @default(uuid())
   name String
+  phone String
+  photo String
+  created_at DateTime? @default(now())
+  update_at DateTime? @default(now())
+
+  connections Connections[]
+  @@map("users")
+}
+
+model Connections{
+  id String @id @default(uuid())
+  phone String
+  name String?
+  photo String?
+  created_at DateTime? @default(now())
+  update_at DateTime? @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+  userId String
+
+  conversation Conversation? @relation("ConnectionConversation", fields: [conversationId], references: [id])
+  conversationId String
+
+  @@map("connections")
+
+}
+
+model Conversation {
+  id String @id @default(uuid())
+  userID String
+  created_at DateTime? @default(now())
+  update_at DateTime? @default(now())
+
+  messege Messeges[]
+  conversation Connections[] @relation("ConnectionConversation")
+
+  @@map("conversations")
+}
+
+model Messeges {
+  id String @id @default(uuid())
+  messegeText String
+  created_at DateTime? @default(now())
+  update_at DateTime? @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id])
+  conversationId String
+
+  @@map("messeges")
 }
