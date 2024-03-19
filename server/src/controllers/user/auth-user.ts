@@ -35,7 +35,7 @@ export class AuthUserController {
           phone: user.phone,
           name: user.name,
         },
-        process.env.JWT_SECRET,
+        process.env.JWT_SECRET!,
         {
           subject: user.id,
           expiresIn: "30d",
