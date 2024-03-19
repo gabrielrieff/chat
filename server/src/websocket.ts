@@ -33,12 +33,9 @@ io.on("connection", (socket) => {
         room: data.room,
       });
     }
-
-    console.log(users);
   });
 
   socket.on("messege", (data: messegeUser) => {
-    console.log(data);
     io.to(data.room).emit("receive_messege", data);
   });
 
