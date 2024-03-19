@@ -11,7 +11,9 @@ model User {
   id String @id @default(uuid())
   name String
   phone String
-  photo String?
+  photoId String?
+  photoUrl String?
+  photoFilename String?
   password String
   created_at DateTime? @default(now())
   update_at DateTime? @default(now())

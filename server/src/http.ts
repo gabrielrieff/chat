@@ -6,6 +6,13 @@ import { Server } from "socket.io";
 import { CreateUserController } from "./controllers/user/create-user";
 import { CreateConnection } from "./controllers/connection/create-connection";
 import { AuthUserController } from "./controllers/user/auth-user";
+import multer from "multer";
+import { isAuthenticated } from "./middleware/isAuthenticated";
+import { UpdateUserController } from "./controllers/user/update-user";
+
+const Multer = multer({
+  storage: multer.memoryStorage(),
+});
 
 const router = Router();
 const app = express();
@@ -15,6 +22,12 @@ app.use(cors());
 //Routers user
 router.post("/users", new CreateUserController().handle);
 router.post("/session", new AuthUserController().handle);
+router.patch(
+  "/users/:id",
+  isAuthenticated,
+  Multer.single("file"),
+  new UpdateUserController().handle
+);
 
 //Routers connection
 router.post("/connection", new CreateConnection().handle);
