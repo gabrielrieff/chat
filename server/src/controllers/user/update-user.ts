@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { prismaClient } from "../../prisma/client";
 import crypto from "crypto";
 import { db, storage } from "../../firebase/firebaseConnect";
-import { deleteDoc, doc, getDoc, setDoc } from "firebase/firestore";
+import { deleteDoc, doc, setDoc } from "firebase/firestore";
 import {
   deleteObject,
   getDownloadURL,
@@ -56,7 +56,6 @@ export class UpdateUserController {
 
       if (photo) {
         const { url, imgID, fileName } = await uploadImage();
-
         if (user.photoId) {
           await deleteDoc(doc(db, "profile", user.photoId));
           await deleteObject(ref(storage, `profile/${user.photoFilename}`));
@@ -65,6 +64,7 @@ export class UpdateUserController {
             ...req.body,
             photoId: imgID,
             photoUrl: url,
+            photoFilename: fileName,
           };
         }
 
@@ -73,7 +73,7 @@ export class UpdateUserController {
             ...req.body,
             photoId: imgID,
             photoUrl: url,
-            photoFileName: fileName,
+            photoFilename: fileName,
           };
         }
       } else {
@@ -82,12 +82,15 @@ export class UpdateUserController {
         };
       }
 
+      console.log(body);
+
       const userUpdate = await prismaClient.user.update({
         where: {
           id: userId,
         },
         data: {
           ...body,
+          update_at: new Date(),
         },
       });
 
