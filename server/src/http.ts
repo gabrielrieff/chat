@@ -9,6 +9,7 @@ import { AuthUserController } from "./controllers/user/auth-user";
 import multer from "multer";
 import { isAuthenticated } from "./middleware/isAuthenticated";
 import { UpdateUserController } from "./controllers/user/update-user";
+import { DeletePhotoController } from "./controllers/user/delete-photo";
 
 const Multer = multer({
   storage: multer.memoryStorage(),
@@ -20,10 +21,15 @@ app.use(express.json());
 app.use(cors());
 
 //Routers user
-router.post("/users", new CreateUserController().handle);
+router.post("/user", new CreateUserController().handle);
 router.post("/session", new AuthUserController().handle);
 router.patch(
-  "/users/:id",
+  "/user/photo-delete/:id",
+  isAuthenticated,
+  new DeletePhotoController().handle
+);
+router.patch(
+  "/user/:id",
   isAuthenticated,
   Multer.single("file"),
   new UpdateUserController().handle
