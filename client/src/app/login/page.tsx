@@ -17,14 +17,10 @@ import { Input } from "~/components/ui/input";
 import { useContext } from "react";
 import { AuthContext } from "~/context/authContext";
 
-export default function Home() {
-  const { create_user } = useContext(AuthContext);
+export default function Login() {
+  const { signIn } = useContext(AuthContext);
 
   const formSchema = z.object({
-    username: z.string().min(3, {
-      message:
-        "Deve ser informado um o nome do usuario com pelo menos 3 caracteres.",
-    }),
     phone: z.string().min(13, {
       message: "Informe um número de telefone.",
     }),
@@ -36,41 +32,27 @@ export default function Home() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
       phone: "",
       password: "",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const { username, phone, password } = values;
+    const { phone, password } = values;
 
-    create_user(username, phone, password);
+    signIn(phone, password);
   }
 
   return (
     <main className="h-screen w-full flex justify-center items-center flex-col p-8">
       <Form {...form}>
         <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-          dev chat
+          dev chat login
         </h2>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-8 w-1/3"
         >
-          <FormField
-            control={form.control}
-            name="username"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Nome</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
           <FormField
             control={form.control}
             name="phone"
@@ -79,6 +61,7 @@ export default function Home() {
                 <FormLabel>Telefone</FormLabel>
                 <FormControl>
                   <Input
+                    autoComplete="off"
                     type="tel"
                     pattern="^\(\d{2}\) \d{5}-\d{4}$"
                     title="Exemplo: (51) 91234-5678"
@@ -96,13 +79,13 @@ export default function Home() {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input type="password" {...field} />
+                  <Input autoComplete="off" type="password" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <Button type="submit">Cadastrar</Button>
+          <Button type="submit">Fazer login</Button>
         </form>
       </Form>
     </main>

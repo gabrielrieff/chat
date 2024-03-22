@@ -6,7 +6,7 @@ import { Chat } from "~/components/Chat";
 import { getRandomColorClass } from "~/helpers/getColors";
 import { socket } from "~/socket/socket";
 
-import foto from "../../public/perfil.jpeg";
+import foto from "../../../../public/perfil.jpeg";
 
 type socketUser = {
   userName: string;
