@@ -1,93 +1,104 @@
 "use client";
 
-import Image from "next/image";
-import { FormEvent, useState } from "react";
-import { Chat } from "~/components/Chat";
-import { getRandomColorClass } from "~/helpers/getColors";
-import { socket } from "~/socket/socket";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-import foto from "../../public/perfil.jpeg";
-
-type socketUser = {
-  userName: string;
-  room: string;
-};
+import { Button } from "~/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "~/components/ui/form";
+import { Input } from "~/components/ui/input";
 
 export default function Home() {
-  const [socketInstance] = useState(socket());
+  const formSchema = z.object({
+    username: z.string().min(3, {
+      message:
+        "Deve ser informado um o nome do usuario com pelo menos 3 caracteres.",
+    }),
+    phone: z.string().min(13, {
+      message: "Informe um número de telefone.",
+    }),
+    password: z.string().min(5, {
+      message: "Informe uma senha de pelo menos 5 caracteres",
+    }),
+  });
 
-  const [userName, setUserName] = useState("Gabriel");
-  const [roomName, setRoomName] = useState("Node");
-  const [color] = useState(getRandomColorClass());
-  const [socketChat, setSocketChat] = useState<any>(null);
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      username: "",
+      phone: "",
+      password: "",
+    },
+  });
 
-  const connectSocket = async (event: FormEvent) => {
-    event.preventDefault();
-    if (!userName.trim() && !roomName.trim()) return;
-
-    const data: socketUser = {
-      userName: userName,
-      room: roomName,
-    };
-
-    socketInstance.emit("select_room", data);
-    setSocketChat(socketInstance);
-  };
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log(values);
+  }
 
   return (
-    <main className="h-screen flex justify-center p-8 bg-stone-300">
-      <div className="w-4/5 h-full grid items-center grid-cols-4 grid-rows-1 ">
-        <section className="bg-white h-full">
-          <div className="h-[6%] bg-zinc-100 p-1 border-r-[1px] border-gray-400">
-            <span>Conversas</span>
-          </div>
-          <div className="h-[94%] p-3 overflow-auto">
-            {contacts.map((contect, index) => (
-              <div
-                className="flex items-center gap-3 p-2 border-b-[1px] border-gray-200 w-full mb-2 hover:bg-neutral-200 cursor-pointer transition-[.5s]"
-                key={index}
-              >
-                <Image
-                  alt=""
-                  src={foto}
-                  className="rounded-full w-16 h-16 object-cover"
-                />
-
-                <div className="flex flex-col">
-                  <span>{contect.name}</span>
-                  <span className="text-xs text-zinc-500">{contect.msg}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="w-full h-full col-span-3 bg-neutral-700">
-          <Chat
-            socket={socketChat}
-            room={roomName}
-            userName={userName}
-            color={color}
+    <main className="h-screen w-full flex justify-center items-center flex-col p-8">
+      <Form {...form}>
+        <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
+          dev chat
+        </h2>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-8 w-1/3"
+        >
+          <FormField
+            control={form.control}
+            name="username"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Nome</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </section>
-      </div>
+          <FormField
+            control={form.control}
+            name="phone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Telefone</FormLabel>
+                <FormControl>
+                  <Input
+                    type="tel"
+                    pattern="^\(\d{2}\) \d{5}-\d{4}$"
+                    title="Exemplo: (51) 91234-5678"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input type="password" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button type="submit">Cadastrar</Button>
+        </form>
+      </Form>
     </main>
   );
 }
-
-const contacts = [
-  { name: "Rafaela", msg: "Ola, tudo bem?" },
-  { name: "John", msg: "Ola, tudo bem?" },
-  { name: "Gabriel Rieff", msg: "Ola, tudo bem?" },
-  { name: "Maria joaquina", msg: "Ola, tudo bem?" },
-  { name: "Luiz otavio", msg: "Ola, tudo bem?" },
-  { name: "Naruto", msg: "Ola, tudo bem?" },
-  { name: "Ricardo", msg: "Ola, tudo bem?" },
-  { name: "Paulo", msg: "Ola, tudo bem?" },
-  { name: "Larissa", msg: "Ola, tudo bem?" },
-  { name: "Carlos", msg: "Ola, tudo bem?" },
-  { name: "Camila", msg: "Ola, tudo bem?" },
-  { name: "Rafael", msg: "Ola, tudo bem?" },
-  { name: "Lurdes", msg: "Ola, tudo bem?" },
-  { name: "Menino ney", msg: "Ola, tudo bem?" },
-];

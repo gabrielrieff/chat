@@ -82,8 +82,6 @@ export class UpdateUserController {
         };
       }
 
-      console.log(body);
-
       const userUpdate = await prismaClient.user.update({
         where: {
           id: userId,
