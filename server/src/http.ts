@@ -10,6 +10,7 @@ import multer from "multer";
 import { isAuthenticated } from "./middleware/isAuthenticated";
 import { UpdateUserController } from "./controllers/user/update-user";
 import { DeletePhotoController } from "./controllers/user/delete-photo";
+import { ListConnectionController } from "./controllers/connection/list-connection";
 
 const Multer = multer({
   storage: multer.memoryStorage(),
@@ -37,6 +38,11 @@ router.patch(
 
 //Routers connection
 router.post("/connection", isAuthenticated, new CreateConnection().handle);
+router.get(
+  "/connections",
+  isAuthenticated,
+  new ListConnectionController().handle
+);
 
 app.use(router);
 
