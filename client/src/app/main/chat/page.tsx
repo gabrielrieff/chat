@@ -2,11 +2,21 @@
 
 import Image from "next/image";
 import { FormEvent, useState } from "react";
-import { Chat } from "~/components/Chat";
 import { getRandomColorClass } from "~/helpers/getColors";
 import { socket } from "~/socket/socket";
 
+import { Chat } from "~/components/Chat";
+import { Button } from "~/components/ui/button";
+import { AiOutlineUserAdd } from "react-icons/ai";
+import { SlOptionsVertical } from "react-icons/sl";
+
 import foto from "../../../../public/perfil.jpeg";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
+import { PopoverNewConnections } from "~/components/Chat/PopoverNewConnections";
 
 type socketUser = {
   userName: string;
@@ -38,8 +48,38 @@ export default function Conversas() {
     <main className="h-screen flex justify-center p-8 bg-stone-300">
       <div className="w-4/5 h-full grid items-center grid-cols-4 grid-rows-1 ">
         <section className="bg-white h-full">
-          <div className="h-[6%] bg-zinc-100 p-1 border-r-[1px] border-gray-400">
+          <div className="h-[6%] bg-zinc-100 p-1 border-r-[1px] border-gray-400 flex justify-between items-center">
             <span>Conversas</span>
+
+            <div>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button className="px-2" variant={"ghost"}>
+                    <AiOutlineUserAdd
+                      size={25}
+                      title="Adicionar novo contato"
+                    />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverNewConnections />
+              </Popover>
+
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button className="px-2" variant={"ghost"}>
+                    <SlOptionsVertical size={20} />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full flex flex-col">
+                  <Button variant={"ghost"} className="rounded-none">
+                    Configurações
+                  </Button>
+                  <Button variant={"ghost"} className="rounded-none">
+                    Desconectar
+                  </Button>
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
           <div className="h-[94%] p-3 overflow-auto">
             {contacts.map((contect, index) => (

@@ -1,8 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { setCookie } from "nookies";
-import { ReactNode, createContext, useState } from "react";
+import { parseCookies, setCookie } from "nookies";
+import { ReactNode, createContext, useEffect, useState } from "react";
+import { Connection } from "~/@types/connection";
 import { User } from "~/@types/user";
 import { api } from "~/services/api";
 
@@ -10,6 +11,7 @@ type AuthContextData = {
   user?: User;
   create_user: (name: string, password: string, phone: string) => void;
   signIn: (phone_user: string, password_user: string) => void;
+  createConnection: (name: string, phone: string) => void;
 };
 
 export const AuthContext = createContext({} as AuthContextData);
@@ -18,6 +20,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const { push } = useRouter();
 
   const [user, setUser] = useState<User>();
+  const [connections, setConnections] = useState<Connection>();
+
+  useEffect(() => {
+    const { "@nextauth.token": token } = parseCookies();
+  }, []);
 
   //user
   async function create_user(name: string, password: string, phone: string) {
@@ -58,8 +65,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       push("/main/chat");
     } catch (error) {}
   }
+
+  async function createConnection(name: string, phone: string) {
+    try {
+      if (name === "" || phone === "") return;
+
+      const response = await api.post("/connection", {
+        name: name,
+        phone: phone,
+      });
+
+      console.log(response.data);
+    } catch (error) {}
+  }
   return (
-    <AuthContext.Provider value={{ user, create_user, signIn }}>
+    <AuthContext.Provider
+      value={{ user, create_user, signIn, createConnection }}
+    >
       <>{children}</>
     </AuthContext.Provider>
   );
