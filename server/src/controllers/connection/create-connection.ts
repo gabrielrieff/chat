@@ -7,8 +7,6 @@ export class CreateConnection {
       const { phone, name } = req.body;
       const userID = req.userId;
 
-      console.log(req);
-
       const isUser = await prismaClient.user.findFirst({
         where: {
           phone: phone,
