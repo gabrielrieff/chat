@@ -36,7 +36,7 @@ router.patch(
 );
 
 //Routers connection
-router.post("/connection", new CreateConnection().handle);
+router.post("/connection", isAuthenticated, new CreateConnection().handle);
 
 app.use(router);
 
