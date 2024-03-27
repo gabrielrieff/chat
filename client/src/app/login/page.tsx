@@ -16,6 +16,7 @@ import {
 import { Input } from "~/components/ui/input";
 import { useContext } from "react";
 import { AuthContext } from "~/context/authContext";
+import Link from "next/link";
 
 export default function Login() {
   const { signIn } = useContext(AuthContext);
@@ -88,6 +89,11 @@ export default function Login() {
           <Button type="submit">Fazer login</Button>
         </form>
       </Form>
+      <Button variant={"link"} asChild>
+        <Link href={"/"} className="text-sky-600">
+          Fazer cadastro
+        </Link>
+      </Button>
     </main>
   );
 }

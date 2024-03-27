@@ -1,9 +1,14 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useContext, useEffect, useState } from "react";
 import { BsEmojiSunglasses } from "react-icons/bs";
 import { IoSend } from "react-icons/io5";
 
+import Image from "next/image";
+
 import Picker from "@emoji-mart/react";
 import data from "@emoji-mart/data";
+import { AuthContext } from "~/context/authContext";
+import { HiUserCircle } from "react-icons/hi2";
+import { Textarea } from "./ui/textarea";
 
 type messegeType = {
   messege: string;
@@ -21,27 +26,30 @@ type ChatParams = {
 };
 
 export const Chat = ({ socket, room, userName, color }: ChatParams) => {
+  const { user } = useContext(AuthContext);
+
   const [userMessege, setUserMessege] = useState("");
   const [messegeList, setMessegeList] = useState<Array<messegeType> | []>([]);
 
   const [isPickerVisible, setIsPickerVisible] = useState(false);
   const [currentEmoji, setCurrentEmoji] = useState(null);
 
-  const messege = async (event: FormEvent) => {
-    event.preventDefault();
-    if (!userMessege.trim()) return;
+  // const messege = async (event: FormEvent) => {
+  //   event.preventDefault();
+  //   if (!userMessege.trim()) return;
 
-    const data = {
-      messege: userMessege,
-      userName: userName,
-      socket_id: socket.id,
-      room: room,
-      color: color,
-    };
-    socket.emit("messege", data);
+  //   const data = {
+  //     messege: userMessege,
+  //     userName: userName,
+  //     socket_id: socket.id,
+  //     room: room,
+  //     color: color,
+  //   };
+  //   socket.emit("messege", data);
 
-    setUserMessege("");
-  };
+  //   setUserMessege("");
+  // };
+
   // useEffect(() => {
   //   socket.on("receive_messege", (data: messegeType) => {
   //     setMessegeList((current) => [...current, data]);
@@ -50,17 +58,27 @@ export const Chat = ({ socket, room, userName, color }: ChatParams) => {
   //   return () => socket.off("receive_messege");
   // }, [socket]);
 
-  useEffect(() => {
-    console.log("true");
-  }, [isPickerVisible]);
+  useEffect(() => {}, [isPickerVisible]);
 
   return (
     <section className="h-full w-full flex flex-col items-center justify-between">
       <div className="h-full w-full ">
-        <div className="bg-zinc-100 w-full h-[6%] p-1">
-          {currentEmoji || room} - {room}
+        <div className="h-[8%] flex items-center gap-3 bg-gray-100 p-1">
+          {user?.photoUrl ? (
+            <Image
+              alt={user!.name}
+              src={user?.photoUrl}
+              width={40}
+              height={40}
+              className="rounded-full w-10 h-10 bg-contain"
+            />
+          ) : (
+            <HiUserCircle size={35} className="text-slate-900" />
+          )}
+
+          {user?.name}
         </div>
-        <div className="h-[94%] bg-chat bg-repeat bg-center pr-0 flex flex-col justify-end relative">
+        <div className="h-[92%] bg-neutral-50 bg-center pr-0 flex flex-col justify-end relative">
           <div className="overflow-y-auto overflow-x-hidden pr-5 flex flex-col gap-3">
             {messegeList.map((messege, index) => (
               <div
@@ -84,10 +102,7 @@ export const Chat = ({ socket, room, userName, color }: ChatParams) => {
               </div>
             ))}
           </div>
-          <form
-            onSubmit={messege}
-            className="flex items-center justify-center w-full h-16 gap-2 mt-3 bg-zinc-100 p-3"
-          >
+          <form className="flex items-center justify-center w-full h-16 gap-2 mt-3 bg-gray-100 p-3">
             <button
               className="hover:text-slate-400 text-zinc-500"
               onClick={() => setIsPickerVisible(!isPickerVisible)}
@@ -109,15 +124,15 @@ export const Chat = ({ socket, room, userName, color }: ChatParams) => {
                 />
               </div>
             )}
-            <textarea
+            <Textarea
               value={userMessege}
               placeholder="Mensagem"
-              className="p-2 px-4 rounded-full w-full h-[40px] resize-none"
+              className="resize-none bg-white min-h-10 max-h-10"
               onChange={(e) => setUserMessege(e.target.value)}
             />
             <button
               type="submit"
-              className="bg-green-500 hover:bg-green-600 focus:bg-green-600 transition-[.5s] rounded-full p-2"
+              className="bg-emerald-500 hover:bg-emerald-600 focus:bg-emerald-600 transition-[.5s] rounded-full p-2"
             >
               <IoSend size={20} className="text-white" />
             </button>

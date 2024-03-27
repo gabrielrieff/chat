@@ -16,6 +16,7 @@ import {
 import { Input } from "~/components/ui/input";
 import { useContext } from "react";
 import { AuthContext } from "~/context/authContext";
+import Link from "next/link";
 
 export default function Home() {
   const { create_user } = useContext(AuthContext);
@@ -47,7 +48,6 @@ export default function Home() {
 
     create_user(username, phone, password);
   }
-
   return (
     <main className="h-screen w-full flex justify-center items-center flex-col p-8">
       <Form {...form}>
@@ -104,6 +104,11 @@ export default function Home() {
           />
           <Button type="submit">Cadastrar</Button>
         </form>
+        <Button variant={"link"} asChild>
+          <Link href={"/login"} className="text-sky-600">
+            Fazer login
+          </Link>
+        </Button>
       </Form>
     </main>
   );
