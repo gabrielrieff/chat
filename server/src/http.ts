@@ -11,6 +11,7 @@ import { isAuthenticated } from "./middleware/isAuthenticated";
 import { UpdateUserController } from "./controllers/user/update-user";
 import { DeletePhotoController } from "./controllers/user/delete-photo";
 import { ListConnectionController } from "./controllers/connection/list-connection";
+import { DetailUserController } from "./controllers/user/detail";
 
 const Multer = multer({
   storage: multer.memoryStorage(),
@@ -24,6 +25,7 @@ app.use(cors());
 //Routers user
 router.post("/user", new CreateUserController().handle);
 router.post("/session", new AuthUserController().handle);
+router.get("/detail", isAuthenticated, new DetailUserController().handle);
 router.patch(
   "/user/photo-delete/:id",
   isAuthenticated,
