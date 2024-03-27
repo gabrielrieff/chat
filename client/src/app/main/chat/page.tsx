@@ -1,22 +1,27 @@
 "use client";
 
 import Image from "next/image";
-import { FormEvent, useState } from "react";
+import { FormEvent, useContext, useState } from "react";
 import { getRandomColorClass } from "~/helpers/getColors";
 import { socket } from "~/socket/socket";
 
 import { Chat } from "~/components/Chat";
 import { Button } from "~/components/ui/button";
-import { AiOutlineUserAdd } from "react-icons/ai";
-import { SlOptionsVertical } from "react-icons/sl";
-
-import foto from "../../../../public/perfil.jpeg";
+import {
+  AiOutlineComment,
+  AiOutlineMore,
+  AiOutlineUserAdd,
+} from "react-icons/ai";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover";
 import { PopoverNewConnections } from "~/components/Chat/PopoverNewConnections";
+import { AuthContext } from "~/context/authContext";
+import { Contacts } from "~/components/Chat/Contacts";
+import { HiUserCircle } from "react-icons/hi2";
+import { Input } from "~/components/ui/input";
 
 type socketUser = {
   userName: string;
@@ -24,7 +29,9 @@ type socketUser = {
 };
 
 export default function Conversas() {
-  const [socketInstance] = useState(socket());
+  const { connections, user, singOut } = useContext(AuthContext);
+
+  //const [socketInstance] = useState(socket());
 
   const [userName, setUserName] = useState("Gabriel");
   const [roomName, setRoomName] = useState("Node");
@@ -45,18 +52,36 @@ export default function Conversas() {
   };
 
   return (
-    <main className="h-screen flex justify-center p-8 bg-stone-300">
-      <div className="w-4/5 h-full grid items-center grid-cols-4 grid-rows-1 ">
+    <main className="h-screen flex justify-center items-center relative">
+      <div className="h-full w-full">
+        <div className="bg-green-800 h-[20%]"></div>
+        <div className="bg-slate-100 h-[80%]"></div>
+      </div>
+      <div className="w-4/5 h-[90%] grid items-center grid-cols-4 grid-rows-1 absolute">
         <section className="bg-white h-full">
-          <div className="h-[6%] bg-zinc-100 p-1 border-r-[1px] border-gray-400 flex justify-between items-center">
-            <span>Conversas</span>
+          <div className="h-[8%] bg-gray-100 p-2 border-r-[1px] border-gray-400 flex justify-between items-center">
+            {user?.photoUrl ? (
+              <Image
+                alt={user!.name}
+                src={user?.photoUrl}
+                width={40}
+                height={40}
+                className="rounded-full w-10 h-10 bg-contain"
+              />
+            ) : (
+              <HiUserCircle size={35} className="text-slate-900" />
+            )}
 
-            <div>
+            <div className="flex justify-center items-center">
+              <Button className="px-2" variant={"ghost"}>
+                <AiOutlineComment size={28} />
+              </Button>
+
               <Popover>
                 <PopoverTrigger asChild>
                   <Button className="px-2" variant={"ghost"}>
                     <AiOutlineUserAdd
-                      size={25}
+                      size={28}
                       title="Adicionar novo contato"
                     />
                   </Button>
@@ -67,37 +92,40 @@ export default function Conversas() {
               <Popover>
                 <PopoverTrigger asChild>
                   <Button className="px-2" variant={"ghost"}>
-                    <SlOptionsVertical size={20} />
+                    <AiOutlineMore size={28} />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-full flex flex-col">
+                <PopoverContent className="w-full flex flex-col p-0">
                   <Button variant={"ghost"} className="rounded-none">
                     Configurações
                   </Button>
-                  <Button variant={"ghost"} className="rounded-none">
+                  <Button
+                    onClick={singOut}
+                    variant={"ghost"}
+                    className="rounded-none"
+                  >
                     Desconectar
                   </Button>
                 </PopoverContent>
               </Popover>
             </div>
           </div>
-          <div className="h-[94%] p-3 overflow-auto">
-            {contacts.map((contect, index) => (
-              <div
-                className="flex items-center gap-3 p-2 border-b-[1px] border-gray-200 w-full mb-2 hover:bg-neutral-200 cursor-pointer transition-[.5s]"
-                key={index}
-              >
-                <Image
-                  alt=""
-                  src={foto}
-                  className="rounded-full w-16 h-16 object-cover"
-                />
 
-                <div className="flex flex-col">
-                  <span>{contect.name}</span>
-                  <span className="text-xs text-zinc-500">{contect.msg}</span>
-                </div>
-              </div>
+          <div className="h-[5%] px-3 py-1">
+            <Input
+              type="search"
+              placeholder="Pesquisar ou começar uma nova conversa"
+            />
+          </div>
+
+          <div className="h-[83%] p-3 overflow-auto">
+            {connections?.map((connetion) => (
+              <Contacts
+                isUser={connetion.isUser}
+                name={connetion.name}
+                photo={connetion.photo}
+                key={connetion.id}
+              />
             ))}
           </div>
         </section>
@@ -114,20 +142,3 @@ export default function Conversas() {
     </main>
   );
 }
-
-const contacts = [
-  { name: "Rafaela", msg: "Ola, tudo bem?" },
-  { name: "John", msg: "Ola, tudo bem?" },
-  { name: "Gabriel Rieff", msg: "Ola, tudo bem?" },
-  { name: "Maria joaquina", msg: "Ola, tudo bem?" },
-  { name: "Luiz otavio", msg: "Ola, tudo bem?" },
-  { name: "Naruto", msg: "Ola, tudo bem?" },
-  { name: "Ricardo", msg: "Ola, tudo bem?" },
-  { name: "Paulo", msg: "Ola, tudo bem?" },
-  { name: "Larissa", msg: "Ola, tudo bem?" },
-  { name: "Carlos", msg: "Ola, tudo bem?" },
-  { name: "Camila", msg: "Ola, tudo bem?" },
-  { name: "Rafael", msg: "Ola, tudo bem?" },
-  { name: "Lurdes", msg: "Ola, tudo bem?" },
-  { name: "Menino ney", msg: "Ola, tudo bem?" },
-];
