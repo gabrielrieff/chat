@@ -12,6 +12,7 @@ import { UpdateUserController } from "./controllers/user/update-user";
 import { DeletePhotoController } from "./controllers/user/delete-photo";
 import { ListConnectionController } from "./controllers/connection/list-connection";
 import { DetailUserController } from "./controllers/user/detail";
+import { DeleteConnectionController } from "./controllers/connection/delete-connection";
 
 const Multer = multer({
   storage: multer.memoryStorage(),
@@ -45,15 +46,14 @@ router.get(
   isAuthenticated,
   new ListConnectionController().handle
 );
+router.delete(
+  "/connection/:id",
+  isAuthenticated,
+  new DeleteConnectionController().handle
+);
 
 app.use(router);
 
 const serverHttp = http.createServer(app);
 
-const io = new Server(serverHttp, {
-  cors: {
-    origin: "http://localhost:3000",
-  },
-});
-
-export { serverHttp, io };
+export { serverHttp };
