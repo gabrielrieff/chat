@@ -4,7 +4,7 @@ import { prismaClient } from "../../prisma/client";
 export class DeleteUserController {
   async handle(req: Request, res: Response) {
     try {
-      const userId = req.params.userId as string;
+      const userId = req.params.id as string;
 
       if (!userId) {
         return res.status(400).json({ error: "ID de usuário ausente" });

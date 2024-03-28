@@ -80,6 +80,7 @@ export default function Home() {
                 <FormControl>
                   <Input
                     type="tel"
+                    placeholder="(51) 91234-5678"
                     pattern="^\(\d{2}\) \d{5}-\d{4}$"
                     title="Exemplo: (51) 91234-5678"
                     {...field}

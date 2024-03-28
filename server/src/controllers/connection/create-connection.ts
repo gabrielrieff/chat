@@ -19,6 +19,7 @@ export class CreateConnection {
           name: name,
           isUser: isUser ? true : false,
           userId: userID,
+          photo: isUser ? isUser.photoUrl : null,
         },
       });
 
