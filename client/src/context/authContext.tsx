@@ -14,6 +14,7 @@ type AuthContextData = {
   singOut: () => void;
   create_user: (name: string, password: string, phone: string) => void;
   createConnection: (name: string, phone: string) => void;
+  deleteConnection: (connectionId: string) => void;
 };
 
 export const AuthContext = createContext({} as AuthContextData);
@@ -22,13 +23,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const { push } = useRouter();
 
   const [user, setUser] = useState<User>();
-  const [connections, setConnections] = useState<Array<Connection>>();
+  const [connections, setConnections] = useState<Array<Connection>>([]);
 
   useEffect(() => {
     const { "@nextauth.token": token } = parseCookies();
     getDetailUser();
     getConnections();
-  });
+  }, []);
 
   //user
   async function create_user(name: string, password: string, phone: string) {
@@ -119,21 +120,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
+  //Connection
   async function createConnection(name: string, phone: string) {
     try {
       if (name === "" || phone === "") return;
 
-      await api.post("/connection", {
+      const response = await api.post("/connection", {
         name: name,
         phone: phone,
       });
+
+      setConnections((prev) => [...prev, response.data]);
+
+      console.log();
     } catch (error) {}
   }
 
-  //Connection
   async function getConnections() {
     try {
       const response = await api.get("/connections");
+      setConnections(response.data);
+    } catch (error) {}
+  }
+
+  async function deleteConnection(connectionId: string) {
+    try {
+      const response = await api.delete(`/connection/${connectionId}`);
+
       setConnections(response.data);
     } catch (error) {}
   }
@@ -146,6 +159,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         singOut,
         createConnection,
         connections,
+        deleteConnection,
       }}
     >
       <>{children}</>
