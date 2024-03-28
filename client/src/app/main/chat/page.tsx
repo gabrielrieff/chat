@@ -1,56 +1,57 @@
 "use client";
 
-import Image from "next/image";
-import { FormEvent, useContext, useState } from "react";
-import { getRandomColorClass } from "~/helpers/getColors";
-import { socket } from "~/socket/socket";
+import { useContext, useState } from "react";
+import { AuthContext } from "~/context/authContext";
 
 import { Chat } from "~/components/Chat";
+import Image from "next/image";
 import { Button } from "~/components/ui/button";
-import {
-  AiOutlineComment,
-  AiOutlineMore,
-  AiOutlineUserAdd,
-} from "react-icons/ai";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover";
-import { PopoverNewConnections } from "~/components/Chat/PopoverNewConnections";
-import { AuthContext } from "~/context/authContext";
+import {
+  AiOutlineComment,
+  AiOutlineMore,
+  AiOutlineUserAdd,
+} from "react-icons/ai";
 import { Contacts } from "~/components/Chat/Contacts";
-import { HiUserCircle } from "react-icons/hi2";
 import { Input } from "~/components/ui/input";
+import { PopoverNewConnections } from "~/components/Chat/PopoverNewConnections";
 
-type socketUser = {
-  userName: string;
-  room: string;
-};
+import { HiUserCircle } from "react-icons/hi2";
 
 export default function Conversas() {
   const { connections, user, singOut } = useContext(AuthContext);
 
   //const [socketInstance] = useState(socket());
 
-  const [userName, setUserName] = useState("Gabriel");
-  const [roomName, setRoomName] = useState("Node");
-  const [color] = useState(getRandomColorClass());
   const [socketChat, setSocketChat] = useState<any>(null);
+  const [chat, setChat] = useState({
+    name: "",
+    photo: "",
+  });
 
-  const connectSocket = async (event: FormEvent) => {
-    event.preventDefault();
-    if (!userName.trim() && !roomName.trim()) return;
+  function toAlterChat(name: string, photo: string) {
+    setChat({
+      name,
+      photo,
+    });
+  }
 
-    const data: socketUser = {
-      userName: userName,
-      room: roomName,
-    };
+  // const connectSocket = async (event: FormEvent) => {
+  //   event.preventDefault();
+  //   if (!userName.trim() && !roomName.trim()) return;
 
-    socketInstance.emit("select_room", data);
-    setSocketChat(socketInstance);
-  };
+  //   const data: socketUser = {
+  //     userName: userName,
+  //     room: roomName,
+  //   };
 
+  //   socketInstance.emit("select_room", data);
+  //   setSocketChat(socketInstance);
+  // };
   return (
     <main className="h-screen flex justify-center items-center relative">
       <div className="h-full w-full">
@@ -121,9 +122,11 @@ export default function Conversas() {
           <div className="h-[83%] p-3 overflow-auto">
             {connections?.map((connetion) => (
               <Contacts
+                onclick={toAlterChat}
                 isUser={connetion.isUser}
                 name={connetion.name}
                 photo={connetion.photo}
+                conversationId={connetion.id}
                 key={connetion.id}
               />
             ))}
@@ -131,12 +134,7 @@ export default function Conversas() {
         </section>
 
         <section className="w-full h-full col-span-3 bg-neutral-700">
-          <Chat
-            socket={socketChat}
-            room={roomName}
-            userName={userName}
-            color={color}
-          />
+          <Chat name={chat.name} photo={chat.photo} socket={socketChat} />
         </section>
       </div>
     </main>
