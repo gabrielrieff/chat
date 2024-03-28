@@ -13,6 +13,10 @@ import { DeletePhotoController } from "./controllers/user/delete-photo";
 import { ListConnectionController } from "./controllers/connection/list-connection";
 import { DetailUserController } from "./controllers/user/detail";
 import { DeleteConnectionController } from "./controllers/connection/delete-connection";
+import { NewMessegeController } from "./controllers/conversation/new-messege";
+import { CreateConversationController } from "./controllers/conversation/create-conversation";
+import { GetConversationController } from "./controllers/conversation/get-conversation";
+import { ListMessegeController } from "./controllers/conversation/list-messege";
 
 const Multer = multer({
   storage: multer.memoryStorage(),
@@ -50,6 +54,23 @@ router.delete(
   "/connection/:id",
   isAuthenticated,
   new DeleteConnectionController().handle
+);
+
+//Messeges
+router.post("/messege/:id", isAuthenticated, new NewMessegeController().handle);
+
+router.get("/messege/:id", isAuthenticated, new ListMessegeController().handle);
+
+router.post(
+  "/conversation/:id",
+  isAuthenticated,
+  new CreateConversationController().handle
+);
+
+router.get(
+  "/conversation/:id",
+  isAuthenticated,
+  new GetConversationController().handle
 );
 
 app.use(router);

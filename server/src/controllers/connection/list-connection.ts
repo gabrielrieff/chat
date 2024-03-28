@@ -6,7 +6,7 @@ export class ListConnectionController {
     try {
       const userID = req.userId;
 
-      const connections = await prismaClient.connections.findMany({
+      const connections = await prismaClient.connection.findMany({
         where: {
           userId: userID,
         },

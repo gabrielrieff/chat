@@ -11,7 +11,7 @@ export class DeleteConnectionController {
         return res.status(400).json({ error: "ID de usuário ausente" });
       }
 
-      const user = await prismaClient.connections.findFirst({
+      const user = await prismaClient.connection.findFirst({
         where: {
           id: userId,
         },
@@ -21,13 +21,13 @@ export class DeleteConnectionController {
         throw new Error("Usuário não existe");
       }
 
-      await prismaClient.connections.deleteMany({
+      await prismaClient.connection.deleteMany({
         where: {
           id: userId,
         },
       });
 
-      const connections = await prismaClient.connections.findMany({
+      const connections = await prismaClient.connection.findMany({
         where: {
           userId: userID,
         },
