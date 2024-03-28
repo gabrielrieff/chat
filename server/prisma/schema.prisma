@@ -18,16 +18,17 @@ model User {
   created_at DateTime? @default(now())
   update_at DateTime? @default(now())
 
-  connections Connections[]
+  connections Connection[]
   @@map("users")
 }
 
-model Connections{
+model Connection{
   id String @id @default(uuid())
   phone String
   name String?
   photo String?
   isUser Boolean
+  userOwnId String
   created_at DateTime? @default(now())
   update_at DateTime? @default(now())
 
@@ -37,23 +38,26 @@ model Connections{
   conversation Conversation? @relation("ConnectionConversation", fields: [conversationId], references: [id])
   conversationId String?
 
+  messages Messege[]
+
   @@map("connections")
 
 }
 
 model Conversation {
   id String @id @default(uuid())
-  userID String
+  userOne String
+  userTwo String
   created_at DateTime? @default(now())
   update_at DateTime? @default(now())
 
-  messege Messeges[]
-  conversation Connections[] @relation("ConnectionConversation")
+  messege Messege[]
+  conversation Connection[] @relation("ConnectionConversation")
 
   @@map("conversations")
 }
 
-model Messeges {
+model Messege {
   id String @id @default(uuid())
   messegeText String
   created_at DateTime? @default(now())
@@ -61,6 +65,9 @@ model Messeges {
 
   conversation Conversation @relation(fields: [conversationId], references: [id])
   conversationId String
+
+  connection Connection @relation(fields: [connectionId], references: [id])
+  connectionId String
 
   @@map("messeges")
 }
