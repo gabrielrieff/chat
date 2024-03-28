@@ -9,7 +9,7 @@ import { Connection } from "~/@types/connection";
 import { HiUserCircle } from "react-icons/hi2";
 
 interface ContactsProps extends Connection {
-  onclick: (name: string, photo: string) => void;
+  onclick: (name: string, photo: string, conversationId: string) => void;
 }
 
 export function Contacts({
@@ -19,13 +19,16 @@ export function Contacts({
   conversationId,
   onclick,
 }: ContactsProps) {
-  const { deleteConnection } = useContext(AuthContext);
+  const { deleteConnection, getMesseges } = useContext(AuthContext);
 
   return (
     <div>
       {isUser === true ? (
         <div
-          onClick={() => onclick(name!, photo!)}
+          onClick={() => {
+            onclick(name!, photo!, conversationId!);
+            getMesseges(conversationId!);
+          }}
           className="flex items-center gap-3 p-2 border-b-[1px] border-gray-200 w-full mb-2 hover:bg-neutral-200 cursor-pointer transition-[.5s]"
         >
           {photo ? (

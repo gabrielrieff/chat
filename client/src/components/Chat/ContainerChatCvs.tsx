@@ -2,26 +2,37 @@ import { Textarea } from "../ui/textarea";
 import Picker from "@emoji-mart/react";
 import data from "@emoji-mart/data";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 
 import { BsEmojiSunglasses } from "react-icons/bs";
 import { IoSend } from "react-icons/io5";
 import { HiUserCircle } from "react-icons/hi2";
-import { Connection } from "~/@types/connection";
-import { useEffect, useState } from "react";
 import { AiOutlineMore } from "react-icons/ai";
 
+import { Connection } from "~/@types/connection";
+import { Messege } from "~/@types/messege";
+
 interface ChatParams extends Connection {
-  socket: any;
+  socket?: any;
+  messeges: Array<Messege>;
 }
 
-export function ContainerChatCvs({ name, photo }: Connection) {
+export function ContainerChatCvs({
+  name,
+  photo,
+  messeges,
+  userOwnId,
+}: ChatParams) {
   const [isPickerVisible, setIsPickerVisible] = useState(false);
   const [currentEmoji, setCurrentEmoji] = useState(null);
   const [userMessege, setUserMessege] = useState("");
 
   useEffect(() => {}, [isPickerVisible]);
 
+  function handleMessege() {
+    console.log(true);
+  }
   return (
     <>
       <div className="h-[8%] flex items-center justify-between gap-3 bg-gray-100 p-1">
@@ -46,29 +57,25 @@ export function ContainerChatCvs({ name, photo }: Connection) {
 
       <div className="h-[92%] bg-neutral-50 bg-center pr-0 flex flex-col justify-end relative">
         <div className="overflow-y-auto overflow-x-hidden pr-5 flex flex-col gap-3">
-          {/* {messegeList.map((messege, index) => (
+          {messeges.map((messege) => (
             <div
-              key={index}
+              key={messege.id}
               className={`flex flex-col ${
-                messege.socket_id === socket.id
-                  ? "items-end bg-green-100 p-2 rounded-lg max-w-[48%] self-end"
-                  : "items-start bg-slate-200 p-2 rounded-lg max-w-[48%] self-start"
+                messege.conversationId !== userOwnId
+                  ? "items-end bg-cyan-100 p-2 rounded-lg max-w-[48%] self-end"
+                  : "items-start bg-white p-2 rounded-lg max-w-[48%] self-start"
               }`}
             >
-              {messege.socket_id !== socket.id ? (
-                <p className={`${messege.color} font-semibold`}>
-                  ~ {messege.userName}
-                </p>
-              ) : (
-                <></>
-              )}
               <p className="text-xs p-1 w-[205px] font-normal break-words">
-                {messege.messege}
+                {messege.messegeText}
               </p>
             </div>
-          ))} */}
+          ))}
         </div>
-        <form className="flex items-center justify-center w-full h-16 gap-2 mt-3 bg-gray-100 p-3">
+        <form
+          onSubmit={handleMessege}
+          className="flex items-center justify-center w-full h-16 gap-2 mt-3 bg-gray-100 p-3"
+        >
           <button
             className="hover:text-slate-400 text-zinc-500"
             onClick={() => setIsPickerVisible(!isPickerVisible)}
@@ -91,7 +98,6 @@ export function ContainerChatCvs({ name, photo }: Connection) {
             </div>
           )}
           <Textarea
-            value={userMessege}
             placeholder="Mensagem"
             className="resize-none bg-white min-h-10 max-h-10"
             onChange={(e) => setUserMessege(e.target.value)}

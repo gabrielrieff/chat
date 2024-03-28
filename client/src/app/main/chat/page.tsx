@@ -31,12 +31,14 @@ export default function Conversas() {
   const [chat, setChat] = useState({
     name: "",
     photo: "",
+    conversationId: "",
   });
 
-  function toAlterChat(name: string, photo: string) {
+  function toAlterChat(name: string, photo: string, conversationId: string) {
     setChat({
       name,
       photo,
+      conversationId,
     });
   }
 
@@ -126,7 +128,7 @@ export default function Conversas() {
                 isUser={connetion.isUser}
                 name={connetion.name}
                 photo={connetion.photo}
-                conversationId={connetion.id}
+                conversationId={connetion.conversationId}
                 key={connetion.id}
               />
             ))}
@@ -134,7 +136,11 @@ export default function Conversas() {
         </section>
 
         <section className="w-full h-full col-span-3 bg-neutral-700">
-          <Chat name={chat.name} photo={chat.photo} socket={socketChat} />
+          <Chat
+            name={chat.name}
+            photo={chat.photo}
+            conversationId={chat.conversationId}
+          />
         </section>
       </div>
     </main>

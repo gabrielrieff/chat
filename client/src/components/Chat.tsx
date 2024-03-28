@@ -5,11 +5,16 @@ import { Connection } from "~/@types/connection";
 import { ContainerNoChatCvs } from "./Chat/ContainerNoChatCvs";
 
 interface ChatParams extends Connection {
-  socket: any;
+  socket?: any;
 }
 
-export const Chat = ({ name, photo }: ChatParams) => {
-  const [messegeList, setMessegeList] = useState([]);
+export const Chat = ({
+  name,
+  photo,
+  conversationId,
+  userOwnId,
+}: ChatParams) => {
+  const { messeges } = useContext(AuthContext);
 
   const [nameConversation, setNameConversation] = useState(name);
   const [photoConversation, setPhotoConversation] = useState(photo);
@@ -24,7 +29,13 @@ export const Chat = ({ name, photo }: ChatParams) => {
     <section className="h-full w-full flex flex-col items-center justify-between">
       <div className="h-full w-full ">
         {name ? (
-          <ContainerChatCvs name={nameConversation} photo={photoConversation} />
+          <ContainerChatCvs
+            userOwnId={userOwnId}
+            name={nameConversation}
+            photo={photoConversation}
+            conversationId={conversationId}
+            messeges={messeges!}
+          />
         ) : (
           <ContainerNoChatCvs />
         )}

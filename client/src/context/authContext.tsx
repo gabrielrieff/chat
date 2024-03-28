@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { destroyCookie, parseCookies, setCookie } from "nookies";
 import { ReactNode, createContext, useEffect, useState } from "react";
 import { Connection } from "~/@types/connection";
+import { Messege } from "~/@types/messege";
 import { User } from "~/@types/user";
 import { api } from "~/services/api";
 
@@ -15,6 +16,9 @@ type AuthContextData = {
   create_user: (name: string, password: string, phone: string) => void;
   createConnection: (name: string, phone: string) => void;
   deleteConnection: (connectionId: string) => void;
+
+  getMesseges: (conversationId: string) => void;
+  messeges?: Messege[];
 };
 
 export const AuthContext = createContext({} as AuthContextData);
@@ -24,6 +28,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const [user, setUser] = useState<User>();
   const [connections, setConnections] = useState<Array<Connection>>([]);
+  const [messeges, setMesseges] = useState<Array<Messege>>([]);
 
   useEffect(() => {
     const { "@nextauth.token": token } = parseCookies();
@@ -113,7 +118,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   async function singOut() {
     try {
-      destroyCookie(null, "@nextauth.token");
+      await destroyCookie(null, "@nextauth.token");
       push("/");
     } catch (error) {
       console.log("erro ao deslogar");
@@ -150,6 +155,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setConnections(response.data);
     } catch (error) {}
   }
+
+  //Conversation
+  async function createConversation(connectionId: string) {
+    try {
+      const response = await api.post(`conversation/${connectionId}`);
+      console.log(response.data);
+      //setMesseges()
+    } catch (error) {}
+  }
+
+  async function getMesseges(conversationId: string) {
+    try {
+      const response = await api.get(`messege/${conversationId}`);
+      setMesseges(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
   return (
     <AuthContext.Provider
       value={{
@@ -160,6 +183,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         createConnection,
         connections,
         deleteConnection,
+        getMesseges,
+        messeges,
       }}
     >
       <>{children}</>
