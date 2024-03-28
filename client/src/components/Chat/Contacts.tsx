@@ -1,16 +1,40 @@
-import { Connection } from "~/@types/connection";
+import { useContext } from "react";
+import { AuthContext } from "~/context/authContext";
+
+import { Button } from "../ui/button";
 import Image from "next/image";
+import { MdDelete } from "react-icons/md";
+
+import { Connection } from "~/@types/connection";
 import { HiUserCircle } from "react-icons/hi2";
-export function Contacts({ isUser, name, photo }: Connection) {
+
+interface ContactsProps extends Connection {
+  onclick: (name: string, photo: string) => void;
+}
+
+export function Contacts({
+  isUser,
+  name,
+  photo,
+  conversationId,
+  onclick,
+}: ContactsProps) {
+  const { deleteConnection } = useContext(AuthContext);
+
   return (
-    <>
+    <div>
       {isUser === true ? (
-        <div className="flex items-center gap-3 p-2 border-b-[1px] border-gray-200 w-full mb-2 hover:bg-neutral-200 cursor-pointer transition-[.5s]">
+        <div
+          onClick={() => onclick(name!, photo!)}
+          className="flex items-center gap-3 p-2 border-b-[1px] border-gray-200 w-full mb-2 hover:bg-neutral-200 cursor-pointer transition-[.5s]"
+        >
           {photo ? (
             <Image
               alt=""
               src={photo}
-              className="rounded-full w-16 h-16 object-cover"
+              width={40}
+              height={40}
+              className="rounded-full w-10 h-10 bg-contain bg-no-repeat bg-center"
             />
           ) : (
             <HiUserCircle size={35} className="text-slate-300" />
@@ -20,6 +44,13 @@ export function Contacts({ isUser, name, photo }: Connection) {
             <span>{name}</span>
             <span className="text-xs text-zinc-500">{}</span>
           </div>
+          <Button
+            variant={"destructive"}
+            className="p-1"
+            onClick={() => deleteConnection(conversationId!)}
+          >
+            <MdDelete size={20} />
+          </Button>
         </div>
       ) : (
         <div className="flex items-center justify-between gap-3 p-2 border-b-[1px] border-gray-200 w-full hover:bg-neutral-100 cursor-pointer transition-[.5s]">
@@ -31,8 +62,14 @@ export function Contacts({ isUser, name, photo }: Connection) {
           <span className="text-xs font-semibold text-emerald-500 hover:text-emerald-700">
             Convidar
           </span>
+          <Button
+            variant={"destructive"}
+            onClick={() => deleteConnection(conversationId!)}
+          >
+            <MdDelete size={20} />
+          </Button>
         </div>
       )}
-    </>
+    </div>
   );
 }
