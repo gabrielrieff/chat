@@ -9,24 +9,33 @@ import { Connection } from "~/@types/connection";
 import { HiUserCircle } from "react-icons/hi2";
 
 interface ContactsProps extends Connection {
-  onclick: (name: string, photo: string, conversationId: string) => void;
+  onclick: (
+    name: string,
+    photo: string,
+    conversationId: string,
+    userId: string,
+    id_user_contact: string
+  ) => void;
 }
 
 export function Contacts({
-  isUser,
+  is_user,
   name,
   photo,
   conversationId,
+  userId,
+  id_user_contact,
+  id,
   onclick,
 }: ContactsProps) {
   const { deleteConnection, getMesseges } = useContext(AuthContext);
 
   return (
     <div>
-      {isUser === true ? (
+      {is_user === true ? (
         <div
           onClick={() => {
-            onclick(name!, photo!, conversationId!);
+            onclick(name!, photo!, conversationId!, userId!, id_user_contact!);
             getMesseges(conversationId!);
           }}
           className="flex items-center gap-3 p-2 border-b-[1px] border-gray-200 w-full mb-2 hover:bg-neutral-200 cursor-pointer transition-[.5s]"
@@ -50,7 +59,7 @@ export function Contacts({
           <Button
             variant={"destructive"}
             className="p-1"
-            onClick={() => deleteConnection(conversationId!)}
+            onClick={() => deleteConnection(id!)}
           >
             <MdDelete size={20} />
           </Button>

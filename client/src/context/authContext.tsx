@@ -18,6 +18,7 @@ type AuthContextData = {
   deleteConnection: (connectionId: string) => void;
 
   getMesseges: (conversationId: string) => void;
+  newMessage: (ConsationId: string, message: string, user_id: string) => void;
   messeges?: Messege[];
 };
 
@@ -94,6 +95,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         photoFilename,
         photoId,
       } = response.data as User;
+
       setCookie(undefined, "@nextauth.token", token, {
         maxAge: 60 * 60 * 24 * 30,
         path: "/",
@@ -118,7 +120,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   async function singOut() {
     try {
-      await destroyCookie(null, "@nextauth.token");
+      destroyCookie(null, "@nextauth.token", {
+        path: "/",
+      });
+
       push("/");
     } catch (error) {
       console.log("erro ao deslogar");
@@ -150,6 +155,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   async function deleteConnection(connectionId: string) {
     try {
+      console.log(connectionId);
       const response = await api.delete(`/connection/${connectionId}`);
 
       setConnections(response.data);
@@ -167,11 +173,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   async function getMesseges(conversationId: string) {
     try {
-      const response = await api.get(`messege/${conversationId}`);
+      const response = await api.get(`message/${conversationId}`);
       setMesseges(response.data);
     } catch (error) {
       console.log(error);
     }
+  }
+
+  async function newMessage(
+    ConsationId: string,
+    message: string,
+    user_id: string
+  ) {
+    try {
+      const response = await api.post(`/message/${ConsationId}`, {
+        message: message,
+        user_id: user_id,
+      });
+
+      console.log(response.data);
+    } catch (error) {}
   }
   return (
     <AuthContext.Provider
@@ -184,6 +205,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         connections,
         deleteConnection,
         getMesseges,
+        newMessage,
         messeges,
       }}
     >

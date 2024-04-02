@@ -57,9 +57,9 @@ router.delete(
 );
 
 //Messeges
-router.post("/messege/:id", isAuthenticated, new NewMessegeController().handle);
+router.post("/message/:id", isAuthenticated, new NewMessegeController().handle);
 
-router.get("/messege/:id", isAuthenticated, new ListMessegeController().handle);
+router.get("/message/:id", isAuthenticated, new ListMessegeController().handle);
 
 router.post(
   "/conversation/:id",

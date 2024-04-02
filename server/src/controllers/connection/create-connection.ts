@@ -11,20 +11,28 @@ export class CreateConnection {
         where: {
           phone: phone,
         },
+        select: {
+          id: true,
+          photoUrl: true,
+          connections: true,
+        },
       });
 
-      if (!isUser) {
-        return res.status(500).send();
-      }
+      const conversationId = await isUser?.connections.filter(
+        (item) => item.id_user_contact === userID
+      );
 
       const connection = await prismaClient.connection.create({
         data: {
           phone: phone,
           name: name,
-          isUser: isUser ? true : false,
-          userId: userID,
-          userOwnId: isUser ? isUser.id : "",
           photo: isUser ? isUser.photoUrl : null,
+          is_user: isUser ? true : false,
+          userId: userID,
+          id_user_contact: isUser ? isUser.id : null,
+          conversationId: conversationId
+            ? conversationId[0].conversationId
+            : null,
         },
       });
 

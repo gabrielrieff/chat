@@ -6,39 +6,61 @@ const io = new Server(8900, {
   },
 });
 
-let users = [];
+let users: User[] = [];
 
-const addUser = (userId, socketId) => {
-  !users.some((user) => user.userId === userId) &&
-    users.push({ userId, socketId });
+const addUser = (userId: string, socketId: string, name: string) => {
+  !users.some((user) => user.id === userId) &&
+    users.push({ id: userId, socketId, name });
 };
 
-const removeUser = (socketId) => {
+const removeUser = (socketId: string) => {
   users = users.filter((user) => user.socketId !== socketId);
 };
 
-const getUser = (userId) => {
-  return users.find((user) => user.userId === userId);
+const getUser = (userId: string) => {
+  return users.find((user) => user.id === userId);
 };
 
 io.on("connection", (socket) => {
-  console.log("User connected");
-
-  socket.on("addUser", (userId) => {
-    addUser(userId, socket.id);
+  socket.on("addUser", (userId, name) => {
+    addUser(userId, socket.id, name);
+    console.log(users);
     io.emit("getUsers", users);
   });
 
   //send and get message
-  socket.on("sendMessage", ({ senderId, receiverId, text }) => {
-    const user = getUser(receiverId);
-    io.to(user.socketId).emit("getMessage", {
-      senderId,
-      text,
-    });
-  });
+  socket.on(
+    "sendMessage",
+    ({ user_id, conversationId, messageText, receiverId }: Message) => {
+      const user = getUser(receiverId);
+
+      console.log(user_id, conversationId, messageText, receiverId);
+      console.log(user);
+      // io.to(user!.socketId).emit("getMessage", {
+      //   conversationId,
+      //   messageText,
+      //   user_id,
+      // });
+    }
+  );
 
   socket.on("disconnect", (reason) => {
     console.log("Usuário desconectado!", socket.id);
+    removeUser(socket.id);
+    io.emit("getUsers");
   });
 });
+
+type Message = {
+  id: string;
+  messageText: string;
+  user_id: string;
+  conversationId: string;
+  receiverId: string;
+};
+
+type User = {
+  id: string;
+  socketId: string;
+  name: string;
+};
