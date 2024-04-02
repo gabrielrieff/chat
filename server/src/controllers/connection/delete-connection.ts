@@ -4,16 +4,16 @@ import { prismaClient } from "../../prisma/client";
 export class DeleteConnectionController {
   async handle(req: Request, res: Response) {
     try {
-      const userId = req.params.id as string;
+      const id_user_contact = req.params.id as string;
       const userID = req.userId;
 
-      if (!userId) {
+      if (!id_user_contact) {
         return res.status(400).json({ error: "ID de usuário ausente" });
       }
 
       const user = await prismaClient.connection.findFirst({
         where: {
-          id: userId,
+          id: id_user_contact,
         },
       });
 
@@ -23,7 +23,7 @@ export class DeleteConnectionController {
 
       await prismaClient.connection.deleteMany({
         where: {
-          id: userId,
+          id: id_user_contact,
         },
       });
 

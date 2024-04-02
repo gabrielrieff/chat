@@ -5,7 +5,7 @@ export class NewMessegeController {
   async handle(req: Request, res: Response) {
     try {
       const conversationId = req.params.id as string;
-      const { messege, connection } = req.body;
+      const { message, user_id } = req.body;
 
       const isExistConversation = await prismaClient.conversation.findFirst({
         where: {
@@ -17,15 +17,15 @@ export class NewMessegeController {
         return res.send("Esta ainda não existe uma conversa");
       }
 
-      const createMessege = await prismaClient.messege.create({
+      const createMessege = await prismaClient.message.create({
         data: {
-          messegeText: messege,
+          messegeText: message,
           conversationId: conversationId,
-          connectionId: connection,
+          user_id: user_id,
         },
       });
 
-      return res.status(200).json({ createMessege });
+      return res.status(200).json(createMessege);
     } catch (error) {}
   }
 }

@@ -12,11 +12,7 @@ export class ListMessegeController {
         },
       });
 
-      if (!isExistConversation) {
-        return res.send("error");
-      }
-
-      const arrayMesseges = await prismaClient.messege.findMany({
+      const arrayMesseges = await prismaClient.message.findMany({
         where: {
           conversationId: conversationId,
         },

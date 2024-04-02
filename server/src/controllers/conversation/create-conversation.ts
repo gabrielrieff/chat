@@ -4,9 +4,19 @@ import { prismaClient } from "../../prisma/client";
 export class CreateConversationController {
   async handle(req: Request, res: Response) {
     try {
-      const meId = req.userId;
-      const twoUserId = req.params.id as string;
+      const id_user_one = req.userId;
+      const id_user_two = req.params.id as string;
       const { connectionId } = req.body;
+
+      const isExistUser = await prismaClient.user.findFirst({
+        where: {
+          id: id_user_two,
+        },
+      });
+
+      if (!isExistUser) {
+        return res.status(500).send("usuario não existe");
+      }
 
       const isExistConversation = await prismaClient.connection.findFirst({
         where: {
@@ -20,8 +30,8 @@ export class CreateConversationController {
 
       const conversation = await prismaClient.conversation.create({
         data: {
-          userOne: meId,
-          userTwo: twoUserId,
+          id_user_one: id_user_one,
+          id_user_two: id_user_two,
         },
       });
 
