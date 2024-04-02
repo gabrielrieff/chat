@@ -1,9 +1,10 @@
 "use client";
 
-import { useContext, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "~/context/authContext";
+import { socket } from "~/socket/socket";
 
-import { Chat } from "~/components/Chat";
+import { Chat } from "~/components/Chat/Chat";
 import Image from "next/image";
 import { Button } from "~/components/ui/button";
 import {
@@ -21,46 +22,50 @@ import { Input } from "~/components/ui/input";
 import { PopoverNewConnections } from "~/components/Chat/PopoverNewConnections";
 
 import { HiUserCircle } from "react-icons/hi2";
+import { io } from "socket.io-client";
 
 export default function Conversas() {
   const { connections, user, singOut } = useContext(AuthContext);
-
-  //const [socketInstance] = useState(socket());
-
-  const [socketChat, setSocketChat] = useState<any>(null);
   const [chat, setChat] = useState({
     name: "",
     photo: "",
     conversationId: "",
+    userId: "",
+    id_user_contact: "",
   });
+  const socket = useRef();
 
-  function toAlterChat(name: string, photo: string, conversationId: string) {
+  function toAlterChat(
+    name: string,
+    photo: string,
+    conversationId: string,
+    userId: string,
+    id_user_contact: string
+  ) {
     setChat({
       name,
       photo,
       conversationId,
+      userId,
+      id_user_contact,
     });
   }
 
-  // const connectSocket = async (event: FormEvent) => {
-  //   event.preventDefault();
-  //   if (!userName.trim() && !roomName.trim()) return;
+  useEffect(() => {
+    socket.current = io("ws://localhost:8900");
+  }, []);
 
-  //   const data: socketUser = {
-  //     userName: userName,
-  //     room: roomName,
-  //   };
+  useEffect(() => {
+    socket.current.emit("addUser", user?.id, user?.name);
+  }, [user]);
 
-  //   socketInstance.emit("select_room", data);
-  //   setSocketChat(socketInstance);
-  // };
   return (
     <main className="h-screen flex justify-center items-center relative">
       <div className="h-full w-full">
         <div className="bg-green-800 h-[20%]"></div>
         <div className="bg-slate-100 h-[80%]"></div>
       </div>
-      <div className="w-4/5 h-[90%] grid items-center grid-cols-4 grid-rows-1 absolute">
+      <div className="w-4/5 xl:w-full xl:p-2 h-[90%] grid items-center grid-cols-4 grid-rows-1 absolute">
         <section className="bg-white h-full">
           <div className="h-[8%] bg-gray-100 p-2 border-r-[1px] border-gray-400 flex justify-between items-center">
             {user?.photoUrl ? (
@@ -125,9 +130,12 @@ export default function Conversas() {
             {connections?.map((connetion) => (
               <Contacts
                 onclick={toAlterChat}
-                isUser={connetion.isUser}
+                is_user={connetion.is_user}
                 name={connetion.name}
                 photo={connetion.photo}
+                userId={connetion.userId}
+                id={connetion.id}
+                id_user_contact={connetion.id_user_contact}
                 conversationId={connetion.conversationId}
                 key={connetion.id}
               />
@@ -140,6 +148,9 @@ export default function Conversas() {
             name={chat.name}
             photo={chat.photo}
             conversationId={chat.conversationId}
+            userId={chat.userId}
+            id_user_contact={chat.id_user_contact}
+            socket={socket}
           />
         </section>
       </div>
