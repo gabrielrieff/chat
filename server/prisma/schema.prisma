@@ -19,6 +19,14 @@ model User {
   update_at DateTime? @default(now())
 
   connections Connection[]
+
+  connectionUser Connection[] @relation("ConnectionUser")
+
+  user1 Conversation[] @relation("ConversationUser1")
+  user2 Conversation[] @relation("ConversationUser2")
+
+  messages Message[] @relation("MessageUser")
+
   @@map("users")
 }
 
@@ -27,18 +35,18 @@ model Connection{
   phone String
   name String?
   photo String?
-  isUser Boolean
-  userOwnId String
+  is_user Boolean
   created_at DateTime? @default(now())
   update_at DateTime? @default(now())
 
   user User @relation(fields: [userId], references: [id])
   userId String
 
+  connectionUser User? @relation("ConnectionUser", fields: [id_user_contact], references: [id])
+  id_user_contact String?
+
   conversation Conversation? @relation("ConnectionConversation", fields: [conversationId], references: [id])
   conversationId String?
-
-  messages Messege[]
 
   @@map("connections")
 
@@ -46,28 +54,31 @@ model Connection{
 
 model Conversation {
   id String @id @default(uuid())
-  userOne String
-  userTwo String
   created_at DateTime? @default(now())
   update_at DateTime? @default(now())
 
-  messege Messege[]
-  conversation Connection[] @relation("ConnectionConversation")
+  user1 User @relation("ConversationUser1", fields: [id_user_one], references: [id])
+  id_user_one String
 
+  user2 User @relation("ConversationUser2", fields: [id_user_two], references: [id])
+  id_user_two String
+
+  messege Message[]
+  conversation Connection[] @relation("ConnectionConversation")
   @@map("conversations")
 }
 
-model Messege {
+model Message {
   id String @id @default(uuid())
   messegeText String
   created_at DateTime? @default(now())
   update_at DateTime? @default(now())
 
+  user    User   @relation("MessageUser", fields: [user_id], references: [id])
+  user_id  String
+
   conversation Conversation @relation(fields: [conversationId], references: [id])
   conversationId String
-
-  connection Connection @relation(fields: [connectionId], references: [id])
-  connectionId String
 
   @@map("messeges")
 }
