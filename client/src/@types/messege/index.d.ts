@@ -3,6 +3,6 @@ export type Messege = {
   messegeText: string;
   created_at: string;
   update_at: string;
+  user_id: string;
   conversationId: string;
-  connection: string;
 };
