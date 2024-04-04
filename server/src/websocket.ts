@@ -24,7 +24,6 @@ const getUser = (userId: string) => {
 io.on("connection", (socket) => {
   socket.on("addUser", (userId, name) => {
     addUser(userId, socket.id, name);
-    console.log(users);
     io.emit("getUsers", users);
   });
 
@@ -33,14 +32,13 @@ io.on("connection", (socket) => {
     "sendMessage",
     ({ user_id, conversationId, messageText, receiverId }: Message) => {
       const user = getUser(receiverId);
-
-      console.log(user_id, conversationId, messageText, receiverId);
-      console.log(user);
-      // io.to(user!.socketId).emit("getMessage", {
-      //   conversationId,
-      //   messageText,
-      //   user_id,
-      // });
+      if (user) {
+        io.to(user!.socketId).emit("getMessage", {
+          conversationId,
+          messageText,
+          user_id,
+        });
+      }
     }
   );
 
