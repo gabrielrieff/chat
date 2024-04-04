@@ -6,6 +6,7 @@ import data from "@emoji-mart/data";
 
 import { IoSend } from "react-icons/io5";
 import { BsEmojiSunglasses } from "react-icons/bs";
+import { Button } from "../ui/button";
 
 interface FooterProps {
   handleSendMessage: () => void;
@@ -23,42 +24,46 @@ export function Footer({
 
   useEffect(() => {}, [isPickerVisible]);
 
-  return (
-    <div className="flex items-center justify-center w-full h-16 gap-2 mt-3 bg-gray-100 p-3">
-      <button
-        className="hover:text-slate-400 text-zinc-500"
-        onClick={() => setIsPickerVisible(!isPickerVisible)}
-      >
-        <BsEmojiSunglasses size={25} />
-      </button>
+  function addEmoji(emoji: any) {
+    setMessageText(`${messageText} ${emoji}`);
+  }
 
-      {isPickerVisible && (
-        <div className="absolute bottom-16 left-4">
-          <Picker
-            data={data}
-            emojiSize={25}
-            emojiButtonSize={28}
-            previewPosition="none"
-            onEmojiSelect={(e: any) => {
-              setCurrentEmoji(e.native);
-              setIsPickerVisible(!isPickerVisible);
-            }}
-          />
+  return (
+    <div className="flex items-center w-full h-[300px] gap-2 mt-1 p-3">
+      <section className="border-[2px] shadow-md rounded-md w-full h-full p-2 flex flex-col">
+        <Textarea
+          value={messageText}
+          placeholder="Mensagem"
+          className="resize-none bg-white border-t-0 border-x-0 rounded-none shadow-none 
+          focus-visible:outline-none h-full"
+          onChange={(e) => setMessageText(e.target.value)}
+        />
+
+        <div className="flex gap-2 items-center w-full p-1">
+          <Button onClick={handleSendMessage}>Enviar</Button>
+          {isPickerVisible && (
+            <div className="absolute bottom-[220px] left-3">
+              <Picker
+                data={data}
+                emojiSize={25}
+                emojiButtonSize={28}
+                previewPosition="none"
+                onEmojiSelect={(e: any) => {
+                  addEmoji(e.native);
+                  setIsPickerVisible(!isPickerVisible);
+                }}
+              />
+            </div>
+          )}
+
+          <button
+            className="hover:text-slate-400 text-zinc-500"
+            onClick={() => setIsPickerVisible(!isPickerVisible)}
+          >
+            <BsEmojiSunglasses size={25} />
+          </button>
         </div>
-      )}
-      <Textarea
-        value={messageText}
-        placeholder="Mensagem"
-        className="resize-none bg-white min-h-10 max-h-10"
-        onChange={(e) => setMessageText(e.target.value)}
-      />
-      <button
-        type="button"
-        onClick={handleSendMessage}
-        className="bg-emerald-500 hover:bg-emerald-600 focus:bg-emerald-600 transition-[.5s] rounded-full p-2"
-      >
-        <IoSend size={20} className="text-white" />
-      </button>
+      </section>
     </div>
   );
 }
