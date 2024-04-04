@@ -2,7 +2,14 @@
 
 import { useRouter } from "next/navigation";
 import { destroyCookie, parseCookies, setCookie } from "nookies";
-import { ReactNode, createContext, useEffect, useState } from "react";
+import {
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  createContext,
+  useEffect,
+  useState,
+} from "react";
 import { Connection } from "~/@types/connection";
 import { Messege } from "~/@types/messege";
 import { User } from "~/@types/user";
@@ -19,7 +26,8 @@ type AuthContextData = {
 
   getMesseges: (conversationId: string) => void;
   newMessage: (ConsationId: string, message: string, user_id: string) => void;
-  messeges?: Messege[];
+  messeges: Messege[];
+  setMesseges: Dispatch<SetStateAction<Messege[]>>;
 };
 
 export const AuthContext = createContext({} as AuthContextData);
@@ -194,6 +202,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.log(response.data);
     } catch (error) {}
   }
+
   return (
     <AuthContext.Provider
       value={{
@@ -207,6 +216,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         getMesseges,
         newMessage,
         messeges,
+        setMesseges,
       }}
     >
       <>{children}</>
