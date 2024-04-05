@@ -26,9 +26,9 @@ export default function Home() {
         <TabsContent value="account">
           <Card>
             <CardHeader>
-              <CardTitle>Account</CardTitle>
+              <CardTitle>Já sou usuário</CardTitle>
               <CardDescription>
-                Make changes to your account here. Click save when you're done.
+                Forneça o telefone e a senha para acessar a plataforma
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
@@ -39,9 +39,10 @@ export default function Home() {
         <TabsContent value="password">
           <Card>
             <CardHeader>
-              <CardTitle>Password</CardTitle>
+              <CardTitle>Quero me registrar</CardTitle>
               <CardDescription>
-                Change your password here. After saving, you'll be logged out.
+                Preencha o formulário com os dados requisitados para se
+                registrar
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">

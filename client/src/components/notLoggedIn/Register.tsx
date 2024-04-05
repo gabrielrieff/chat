@@ -9,15 +9,29 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { z } from "zod";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { AuthContext } from "~/context/authContext";
 import { Button } from "../ui/button";
+
+import {
+  TbEye,
+  TbPassword,
+  TbPasswordUser,
+  TbPhone,
+  TbUser,
+} from "react-icons/tb";
 
 export function Register() {
   const { create_user } = useContext(AuthContext);
 
+  const [visibilityPassword, setVisibilityPassword] = useState(false);
+
   const { form, schema } = useSchemaRegister();
   type formDataProps = z.infer<typeof schema>;
+
+  function handleVisibilityPassword() {
+    setVisibilityPassword(!visibilityPassword);
+  }
 
   async function onSubmit(values: formDataProps) {
     const { username, phone, password } = values;
@@ -38,7 +52,10 @@ export function Register() {
             <FormItem>
               <FormLabel>Nome</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <div className="relative flex items-center">
+                  <Input className="pl-8" {...field} />
+                  <TbUser size={23} className="absolute left-1 text-zinc-400" />
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -51,13 +68,20 @@ export function Register() {
             <FormItem>
               <FormLabel>Telefone</FormLabel>
               <FormControl>
-                <Input
-                  type="tel"
-                  placeholder="(51) 91234-5678"
-                  pattern="^\(\d{2}\) \d{5}-\d{4}$"
-                  title="Exemplo: (51) 91234-5678"
-                  {...field}
-                />
+                <div className="relative flex items-center">
+                  <Input
+                    className="pl-8"
+                    type="tel"
+                    placeholder="(51) 91234-5678"
+                    pattern="^\(\d{2}\) \d{5}-\d{4}$"
+                    title="Exemplo: (51) 91234-5678"
+                    {...field}
+                  />
+                  <TbPhone
+                    size={23}
+                    className="absolute left-1 text-zinc-400"
+                  />
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -68,9 +92,24 @@ export function Register() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>Senha</FormLabel>
               <FormControl>
-                <Input type="password" {...field} />
+                <div className="relative flex items-center">
+                  <TbEye
+                    size={23}
+                    className="absolute right-1 text-zinc-400 cursor-pointer hover:text-slate-700"
+                    onClick={handleVisibilityPassword}
+                  />
+                  <Input
+                    className="px-8"
+                    type={visibilityPassword ? "text" : "password"}
+                    {...field}
+                  />
+                  <TbPasswordUser
+                    size={23}
+                    className="absolute left-1 text-zinc-400"
+                  />
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>

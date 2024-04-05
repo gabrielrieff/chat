@@ -21,6 +21,7 @@ import { Messege } from "~/@types/messege";
 import { MenuMain } from "~/components/Menu/MainMenu";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { BsSearch } from "react-icons/bs";
+import { User } from "~/components/User/User";
 
 export default function Conversas() {
   const {
@@ -35,6 +36,7 @@ export default function Conversas() {
 
   const [messagens, setMessages] = useState<Array<Messege>>(messeges);
   const [messageText, setMessageText] = useState("");
+  const [root, setRoot] = useState("chat");
   const [chat, setChat] = useState({
     name: "",
     photo: "",
@@ -115,6 +117,25 @@ export default function Conversas() {
     return () => socket.current.off("getMessage");
   }, [socket.current]);
 
+  function handleNavegation(root: "user" | "connections" | "chat") {
+    setRoot(root);
+  }
+  const comp = () => {
+    switch (root) {
+      case "user":
+        return <User />;
+      case "connections":
+        return;
+
+      case "chat":
+        return undefined;
+    }
+  };
+
+  useEffect(() => {
+    comp();
+  }, [root]);
+
   return (
     <main className="h-screen flex flex-row bg-white">
       <section className="flex flex-col h-full">
@@ -126,97 +147,102 @@ export default function Conversas() {
         </div>
 
         <div className="flex h-full w-full pt-7">
-          <MenuMain />
-          <section className="h-full w-full">
-            <div className="h-[5%] px-3 py-1 flex items-center relative">
-              <Input
-                type="search"
-                className="pl-8 bg-neutral-100 placeholder:text-zinc-400"
-                placeholder="Pesquisar uma conversa"
-              />
-              <BsSearch size={20} className="absolute text-zinc-400 left-5" />
-            </div>
+          <MenuMain handleNavegation={handleNavegation} isLinkActive={root} />
 
-            <div className="h-[5%] px-3 py-2 flex items-center text-zinc-600 font-medium">
-              Chats
-            </div>
+          {comp() !== undefined ? (
+            comp()
+          ) : (
+            <section className="h-full w-full">
+              <div className="h-[5%] px-3 py-1 flex items-center relative">
+                <Input
+                  type="search"
+                  className="pl-8 bg-neutral-100 placeholder:text-zinc-400"
+                  placeholder="Pesquisar uma conversa"
+                />
+                <BsSearch size={20} className="absolute text-zinc-400 left-5" />
+              </div>
 
-            <div className="h-[90%] p-1 overflow-auto">
-              {connections!.map((connetion) => (
-                <div
-                  key={connetion.id}
-                  onClick={() => {
-                    toAlterChat(
-                      connetion.name!,
-                      connetion.photo!,
-                      connetion.conversationId!,
-                      connetion.userId!,
-                      connetion.id_user_contact!
-                    );
-                    getMesseges(connetion.conversationId!);
-                  }}
-                  className={`flex p-2 w-full rounded-lg mt-1 hover:bg-sky-100 cursor-pointer transition-[.5s]
+              <div className="h-[5%] px-3 py-2 flex items-center text-zinc-600 font-medium">
+                Chats
+              </div>
+
+              <div className="h-[90%] p-1 overflow-auto">
+                {connections!.map((connetion) => (
+                  <div
+                    key={connetion.id}
+                    onClick={() => {
+                      toAlterChat(
+                        connetion.name!,
+                        connetion.photo!,
+                        connetion.conversationId!,
+                        connetion.userId!,
+                        connetion.id_user_contact!
+                      );
+                      getMesseges(connetion.conversationId!);
+                    }}
+                    className={`flex p-2 w-full rounded-lg mt-1 hover:bg-sky-100 cursor-pointer transition-[.5s]
                   ${
                     connetion.id_user_contact === chat.id_user_contact &&
                     "bg-sky-600 hover:bg-sky-500"
                   }`}
-                >
-                  <div className="flex flex-row items-center justify-center h-20 w-full gap-2">
-                    <div className="h-full">
-                      {connetion.photo ? (
-                        <Avatar>
-                          <AvatarImage src={connetion.photo} />
-                          <AvatarFallback>
-                            {connetion.name
-                              ?.substring(0, 2)
-                              .toLocaleUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                      ) : (
-                        <Avatar>
-                          <AvatarFallback>
-                            {connetion.name
-                              ?.substring(0, 2)
-                              .toLocaleUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                      )}
-                    </div>
-                    <div className="flex flex-col h-full w-full">
-                      <div
-                        className={`flex justify-between w-full ${
-                          connetion.id_user_contact === chat.id_user_contact &&
-                          "text-white"
-                        }`}
-                      >
-                        <span>{connetion.name}</span>
+                  >
+                    <div className="flex flex-row items-center justify-center h-20 w-full gap-2">
+                      <div className="h-full">
+                        {connetion.photo ? (
+                          <Avatar>
+                            <AvatarImage src={connetion.photo} />
+                            <AvatarFallback>
+                              {connetion.name
+                                ?.substring(0, 2)
+                                .toLocaleUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                        ) : (
+                          <Avatar>
+                            <AvatarFallback>
+                              {connetion.name
+                                ?.substring(0, 2)
+                                .toLocaleUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                        )}
+                      </div>
+                      <div className="flex flex-col h-full w-full">
+                        <div
+                          className={`flex justify-between w-full ${
+                            connetion.id_user_contact ===
+                              chat.id_user_contact && "text-white"
+                          }`}
+                        >
+                          <span>{connetion.name}</span>
 
+                          <span
+                            className={`text-xs ${
+                              connetion.id_user_contact === chat.id_user_contact
+                                ? "text-sky-100"
+                                : "text-zinc-500"
+                            }`}
+                          >
+                            14:33
+                          </span>
+                        </div>
                         <span
-                          className={`text-xs ${
+                          className={`text-xs max-w-[200px] max-h-14 break-words line-clamp-3 ${
                             connetion.id_user_contact === chat.id_user_contact
-                              ? "text-sky-100"
+                              ? "text-zinc-200"
                               : "text-zinc-500"
                           }`}
                         >
-                          14:33
+                          Olá, como
+                          esta?aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
                         </span>
                       </div>
-                      <span
-                        className={`text-xs max-w-[200px] max-h-14 break-words line-clamp-3 ${
-                          connetion.id_user_contact === chat.id_user_contact
-                            ? "text-zinc-200"
-                            : "text-zinc-500"
-                        }`}
-                      >
-                        Olá, como
-                        esta?aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-                      </span>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </section>
+                ))}
+              </div>
+            </section>
+          )}
         </div>
       </section>
 

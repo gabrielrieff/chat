@@ -12,16 +12,27 @@ import { PopoverNewConnections } from "./PopoverNewConnections";
 import { useContext } from "react";
 import { AuthContext } from "~/context/authContext";
 
-export function MenuMain() {
+interface MenuMainProps {
+  handleNavegation: (root: "user" | "connections" | "chat") => void;
+  isLinkActive: string;
+}
+
+export function MenuMain({ handleNavegation, isLinkActive }: MenuMainProps) {
   const { singOut } = useContext(AuthContext);
 
   return (
-    <div className="flex flex-col justify-between h-full p-2 bg-white text-zinc-400">
+    <div className="flex flex-col justify-between h-full p-2 pr-0 bg-white text-zinc-400">
       <div className="flex flex-col gap-4">
-        <Button variant={"ghost"}>
+        <Button
+          variant={"ghost"}
+          onClick={() => handleNavegation("chat")}
+          className={isLinkActive === "chat" ? "bg-sky-100 text-sky-500" : ""}
+        >
           <BsFillChatLeftTextFill size={28} />
         </Button>
-
+        <Button variant={"ghost"}>
+          <BsFillPersonLinesFill size={28} />
+        </Button>
         <Popover>
           <PopoverTrigger asChild>
             <Button variant={"ghost"}>
@@ -30,14 +41,14 @@ export function MenuMain() {
           </PopoverTrigger>
           <PopoverNewConnections />
         </Popover>
-
-        <Button variant={"ghost"}>
-          <BsFillPersonLinesFill size={28} />
-        </Button>
       </div>
 
       <div className="flex flex-col gap-6">
-        <Button variant={"ghost"}>
+        <Button
+          variant={"ghost"}
+          className={isLinkActive === "user" ? "bg-sky-100 text-sky-500" : ""}
+          onClick={() => handleNavegation("user")}
+        >
           <BsSliders size={28} />
         </Button>
 
