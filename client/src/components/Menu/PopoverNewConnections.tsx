@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { PopoverContent } from "../ui/popover";
+import { PopoverArrow, PopoverContent } from "../ui/popover";
 import { AuthContext } from "~/context/authContext";
 import { useConnection } from "./shemaConnection";
 import { z } from "zod";
@@ -19,7 +19,7 @@ export function PopoverNewConnections() {
     createConnection(name, telefone);
   }
   return (
-    <PopoverContent>
+    <PopoverContent side="left">
       <form
         onSubmit={handleSubmit(handleConnection)}
         className="flex flex-col gap-4"
@@ -41,6 +41,7 @@ export function PopoverNewConnections() {
 
         <Button>Adicionar</Button>
       </form>
+      <PopoverArrow className="fill-zinc-500 drop-shadow-md" />
     </PopoverContent>
   );
 }

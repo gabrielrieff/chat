@@ -1,116 +1,55 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-
-import { Button } from "~/components/ui/button";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "~/components/ui/form";
-import { Input } from "~/components/ui/input";
-import { useContext } from "react";
-import { AuthContext } from "~/context/authContext";
-import Link from "next/link";
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { Register } from "~/components/notLoggedIn/Register";
+import { Login } from "~/components/notLoggedIn/Login";
 
 export default function Home() {
-  const { create_user } = useContext(AuthContext);
-
-  const formSchema = z.object({
-    username: z.string().min(3, {
-      message:
-        "Deve ser informado um o nome do usuario com pelo menos 3 caracteres.",
-    }),
-    phone: z.string().min(13, {
-      message: "Informe um número de telefone.",
-    }),
-    password: z.string().min(5, {
-      message: "Informe uma senha de pelo menos 5 caracteres",
-    }),
-  });
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      username: "",
-      phone: "",
-      password: "",
-    },
-  });
-
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    const { username, phone, password } = values;
-
-    create_user(username, phone, password);
-  }
   return (
-    <main className="h-screen w-full flex justify-center items-center flex-col p-8">
-      <Form {...form}>
-        <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-          dev chat
-        </h2>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-8 w-1/3"
-        >
-          <FormField
-            control={form.control}
-            name="username"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Nome</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="phone"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Telefone</FormLabel>
-                <FormControl>
-                  <Input
-                    type="tel"
-                    placeholder="(51) 91234-5678"
-                    pattern="^\(\d{2}\) \d{5}-\d{4}$"
-                    title="Exemplo: (51) 91234-5678"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input type="password" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit">Cadastrar</Button>
-        </form>
-        <Button variant={"link"} asChild>
-          <Link href={"/login"} className="text-sky-600">
-            Fazer login
-          </Link>
-        </Button>
-      </Form>
-    </main>
+    <div className="h-screen w-full flex justify-center items-center flex-col">
+      <Tabs defaultValue="account" className="w-[500px] h-[700px] p-8">
+        <div className="flex items-center gap-1 mb-6 justify-center font-semibold text-4xl">
+          <span className="text-sky-500">dev</span>
+          <span>chat</span>
+        </div>
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="account">Login</TabsTrigger>
+          <TabsTrigger value="password">Registrar</TabsTrigger>
+        </TabsList>
+        <TabsContent value="account">
+          <Card>
+            <CardHeader>
+              <CardTitle>Account</CardTitle>
+              <CardDescription>
+                Make changes to your account here. Click save when you're done.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <Login />
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="password">
+          <Card>
+            <CardHeader>
+              <CardTitle>Password</CardTitle>
+              <CardDescription>
+                Change your password here. After saving, you'll be logged out.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <Register />
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 }

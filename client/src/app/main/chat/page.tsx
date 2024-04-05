@@ -117,7 +117,7 @@ export default function Conversas() {
 
   return (
     <main className="h-screen flex flex-row bg-white">
-      <section className="flex flex-col h-full w-[20%]">
+      <section className="flex flex-col h-full">
         <div>
           <div className="flex items-center gap-1 pt-3 justify-center font-semibold text-2xl">
             <span className="text-sky-500">dev</span>

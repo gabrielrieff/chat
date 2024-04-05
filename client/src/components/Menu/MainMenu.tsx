@@ -9,8 +9,12 @@ import { LuLogOut } from "react-icons/lu";
 import { Button } from "../ui/button";
 import { Popover, PopoverTrigger } from "../ui/popover";
 import { PopoverNewConnections } from "./PopoverNewConnections";
+import { useContext } from "react";
+import { AuthContext } from "~/context/authContext";
 
 export function MenuMain() {
+  const { singOut } = useContext(AuthContext);
+
   return (
     <div className="flex flex-col justify-between h-full p-2 bg-white text-zinc-400">
       <div className="flex flex-col gap-4">
@@ -37,7 +41,7 @@ export function MenuMain() {
           <BsSliders size={28} />
         </Button>
 
-        <Button variant={"ghost"}>
+        <Button variant={"ghost"} onClick={singOut}>
           <LuLogOut size={28} />
         </Button>
       </div>
