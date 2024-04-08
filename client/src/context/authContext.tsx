@@ -18,6 +18,7 @@ import { api } from "~/services/api";
 type AuthContextData = {
   user?: User;
   connections?: Array<Connection>;
+  conversations?: Array<Connection>;
   signIn: (phone_user: string, password_user: string) => void;
   singOut: () => void;
   create_user: (name: string, password: string, phone: string) => void;
@@ -37,6 +38,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const [user, setUser] = useState<User>();
   const [connections, setConnections] = useState<Array<Connection>>([]);
+  const [conversations, setConversations] = useState<Array<Connection>>([]);
   const [messeges, setMesseges] = useState<Array<Messege>>([]);
 
   useEffect(() => {
@@ -158,6 +160,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const response = await api.get("/connections");
       setConnections(response.data);
+
+      const conversas = response.data.filter(
+        (item) => item.conversationId !== null
+      );
+      setConversations(conversas);
     } catch (error) {}
   }
 
@@ -167,6 +174,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const response = await api.delete(`/connection/${connectionId}`);
 
       setConnections(response.data);
+
+      const conversas = response.data.filter(
+        (item) => item.conversationId !== null
+      );
+      setConversations(conversas);
     } catch (error) {}
   }
 
@@ -217,6 +229,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         newMessage,
         messeges,
         setMesseges,
+        conversations,
       }}
     >
       <>{children}</>
