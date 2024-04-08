@@ -3,31 +3,24 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "~/context/authContext";
 
-import Image from "next/image";
 import { Chat } from "~/components/Chat/index";
-import { Button } from "~/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "~/components/ui/popover";
+
 import { Input } from "~/components/ui/input";
 import { ContainerNoChatCvs } from "~/components/Chat/ContainerNoChatCvs";
 
-import { HiUserCircle } from "react-icons/hi2";
 import { io } from "socket.io-client";
-import { MdKeyboardArrowDown } from "react-icons/md";
 import { Messege } from "~/@types/messege";
 import { MenuMain } from "~/components/Menu/MainMenu";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { BsSearch } from "react-icons/bs";
 import { User } from "~/components/User/User";
+import { Connections } from "~/components/Connections/Connections";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function Conversas() {
   const {
-    connections,
+    conversations,
     user,
-    deleteConnection,
     getMesseges,
     messeges,
     setMesseges,
@@ -125,7 +118,7 @@ export default function Conversas() {
       case "user":
         return <User />;
       case "connections":
-        return;
+        return <Connections />;
 
       case "chat":
         return undefined;
@@ -148,106 +141,119 @@ export default function Conversas() {
 
         <div className="flex h-full w-full pt-7">
           <MenuMain handleNavegation={handleNavegation} isLinkActive={root} />
+          <AnimatePresence mode="wait">
+            <motion.div
+              initial={{ y: 10, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -10, opacity: 0 }}
+              transition={{ duration: 2 }}
+            >
+              {comp() !== undefined ? (
+                comp()
+              ) : (
+                <section className="h-full w-full">
+                  <div className="h-[5%] px-3 py-1 flex items-center relative">
+                    <Input
+                      type="search"
+                      className="pl-8 bg-neutral-100 placeholder:text-zinc-400"
+                      placeholder="Pesquisar uma conversa"
+                    />
+                    <BsSearch
+                      size={20}
+                      className="absolute text-zinc-400 left-5"
+                    />
+                  </div>
 
-          {comp() !== undefined ? (
-            comp()
-          ) : (
-            <section className="h-full w-full">
-              <div className="h-[5%] px-3 py-1 flex items-center relative">
-                <Input
-                  type="search"
-                  className="pl-8 bg-neutral-100 placeholder:text-zinc-400"
-                  placeholder="Pesquisar uma conversa"
-                />
-                <BsSearch size={20} className="absolute text-zinc-400 left-5" />
-              </div>
+                  <div className="h-[5%] px-3 py-2 flex items-center text-zinc-600 font-medium">
+                    Chats
+                  </div>
 
-              <div className="h-[5%] px-3 py-2 flex items-center text-zinc-600 font-medium">
-                Chats
-              </div>
-
-              <div className="h-[90%] p-1 overflow-auto">
-                {connections!.map((connetion) => (
-                  <div
-                    key={connetion.id}
-                    onClick={() => {
-                      toAlterChat(
-                        connetion.name!,
-                        connetion.photo!,
-                        connetion.conversationId!,
-                        connetion.userId!,
-                        connetion.id_user_contact!
-                      );
-                      getMesseges(connetion.conversationId!);
-                    }}
-                    className={`flex p-2 w-full rounded-lg mt-1 hover:bg-sky-100 cursor-pointer transition-[.5s]
+                  <div className="h-[90%] p-1 overflow-auto">
+                    {conversations!.map((conversation) => (
+                      <div
+                        key={conversation.id}
+                        onClick={() => {
+                          toAlterChat(
+                            conversation.name!,
+                            conversation.photo!,
+                            conversation.conversationId!,
+                            conversation.userId!,
+                            conversation.id_user_contact!
+                          );
+                          getMesseges(conversation.conversationId!);
+                        }}
+                        className={`flex p-2 w-full rounded-lg mt-1 hover:bg-sky-100 cursor-pointer transition-[.5s]
                   ${
-                    connetion.id_user_contact === chat.id_user_contact &&
+                    conversation.id_user_contact === chat.id_user_contact &&
                     "bg-sky-600 hover:bg-sky-500"
                   }`}
-                  >
-                    <div className="flex flex-row items-center justify-center h-20 w-full gap-2">
-                      <div className="h-full">
-                        {connetion.photo ? (
-                          <Avatar>
-                            <AvatarImage src={connetion.photo} />
-                            <AvatarFallback>
-                              {connetion.name
-                                ?.substring(0, 2)
-                                .toLocaleUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                        ) : (
-                          <Avatar>
-                            <AvatarFallback>
-                              {connetion.name
-                                ?.substring(0, 2)
-                                .toLocaleUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                        )}
-                      </div>
-                      <div className="flex flex-col h-full w-full">
-                        <div
-                          className={`flex justify-between w-full ${
-                            connetion.id_user_contact ===
-                              chat.id_user_contact && "text-white"
-                          }`}
-                        >
-                          <span>{connetion.name}</span>
+                      >
+                        <div className="flex flex-row items-center justify-center h-20 w-full gap-2">
+                          <div className="h-full">
+                            {conversation.photo ? (
+                              <Avatar>
+                                <AvatarImage src={conversation.photo} />
+                                <AvatarFallback>
+                                  {conversation.name
+                                    ?.substring(0, 2)
+                                    .toLocaleUpperCase()}
+                                </AvatarFallback>
+                              </Avatar>
+                            ) : (
+                              <Avatar>
+                                <AvatarFallback>
+                                  {conversation.name
+                                    ?.substring(0, 2)
+                                    .toLocaleUpperCase()}
+                                </AvatarFallback>
+                              </Avatar>
+                            )}
+                          </div>
+                          <div className="flex flex-col h-full w-full">
+                            <div
+                              className={`flex justify-between w-full ${
+                                conversation.id_user_contact ===
+                                  chat.id_user_contact && "text-white"
+                              }`}
+                            >
+                              <span>{conversation.name}</span>
 
-                          <span
-                            className={`text-xs ${
-                              connetion.id_user_contact === chat.id_user_contact
-                                ? "text-sky-100"
-                                : "text-zinc-500"
-                            }`}
-                          >
-                            14:33
-                          </span>
+                              <span
+                                className={`text-xs ${
+                                  conversation.id_user_contact ===
+                                  chat.id_user_contact
+                                    ? "text-sky-100"
+                                    : "text-zinc-500"
+                                }`}
+                              >
+                                14:33
+                              </span>
+                            </div>
+                            <span
+                              className={`text-xs max-w-[228px] max-h-14 break-words line-clamp-3 ${
+                                conversation.id_user_contact ===
+                                chat.id_user_contact
+                                  ? "text-zinc-200"
+                                  : "text-zinc-500"
+                              }`}
+                            >
+                              Olá, como
+                              esta?aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                            </span>
+                          </div>
                         </div>
-                        <span
-                          className={`text-xs max-w-[200px] max-h-14 break-words line-clamp-3 ${
-                            connetion.id_user_contact === chat.id_user_contact
-                              ? "text-zinc-200"
-                              : "text-zinc-500"
-                          }`}
-                        >
-                          Olá, como
-                          esta?aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-                        </span>
                       </div>
-                    </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </section>
-          )}
+                </section>
+              )}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </section>
 
       <section
-        className="h-full w-[80%] flex flex-col items-center justify-between
+        className="h-full w-full flex flex-col items-center justify-between
       border-l-[1px] shadow-xl"
       >
         <div className="h-full w-full ">

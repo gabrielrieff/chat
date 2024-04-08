@@ -30,7 +30,13 @@ export function MenuMain({ handleNavegation, isLinkActive }: MenuMainProps) {
         >
           <BsFillChatLeftTextFill size={28} />
         </Button>
-        <Button variant={"ghost"}>
+        <Button
+          variant={"ghost"}
+          onClick={() => handleNavegation("connections")}
+          className={
+            isLinkActive === "connections" ? "bg-sky-100 text-sky-500" : ""
+          }
+        >
           <BsFillPersonLinesFill size={28} />
         </Button>
         <Popover>
