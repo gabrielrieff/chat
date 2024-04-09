@@ -1,6 +1,8 @@
 "use client";
 
 import { useContext, useEffect, useRef, useState } from "react";
+import { BsSearch } from "react-icons/bs";
+import { AnimatePresence, motion } from "framer-motion";
 import { AuthContext } from "~/context/authContext";
 
 import { Chat } from "~/components/Chat/index";
@@ -8,14 +10,11 @@ import { Chat } from "~/components/Chat/index";
 import { Input } from "~/components/ui/input";
 import { ContainerNoChatCvs } from "~/components/Chat/ContainerNoChatCvs";
 
-import { io } from "socket.io-client";
-import { Messege } from "~/@types/messege";
 import { MenuMain } from "~/components/Menu/MainMenu";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
-import { BsSearch } from "react-icons/bs";
 import { User } from "~/components/User/User";
 import { Connections } from "~/components/Connections/Connections";
-import { AnimatePresence, motion } from "framer-motion";
+import { socket } from "~/socket/socket";
 
 export default function Conversas() {
   const {
@@ -27,7 +26,6 @@ export default function Conversas() {
     newMessage,
   } = useContext(AuthContext);
 
-  const [messagens, setMessages] = useState<Array<Messege>>(messeges);
   const [messageText, setMessageText] = useState("");
   const [root, setRoot] = useState("chat");
   const [chat, setChat] = useState({
@@ -37,7 +35,6 @@ export default function Conversas() {
     userId: "",
     id_user_contact: "",
   });
-  const socket = useRef();
 
   function toAlterChat(
     name: string,
@@ -55,6 +52,30 @@ export default function Conversas() {
     });
   }
 
+  const [socketInstance] = useState(socket());
+
+  useEffect(() => {
+    socketInstance.emit("addUser", user?.id, user?.name);
+
+    socketInstance.on("getMessage", (data) => {
+      setMesseges((prev) => [
+        ...prev,
+        {
+          id: "01",
+          messegeText: data.messageText,
+          conversationId: data.conversationId,
+          user_id: data.user_id,
+          created_at: new Date().toISOString(),
+          update_at: new Date().toISOString(),
+        },
+      ]);
+    });
+
+    return () => {
+      socketInstance.off("getMessage");
+    };
+  }, [socketInstance, user, setMesseges]);
+
   async function handleSendMessage() {
     if (chat.conversationId === null || chat.conversationId === undefined)
       return;
@@ -63,7 +84,7 @@ export default function Conversas() {
 
     await newMessage(chat.conversationId, messageText, chat.userId);
 
-    await socket.current.emit("sendMessage", {
+    await socketInstance.emit("sendMessage", {
       user_id: chat.userId,
       conversationId: chat.conversationId,
       messageText: messageText,
@@ -77,42 +98,17 @@ export default function Conversas() {
         messegeText: messageText,
         conversationId: chat.conversationId,
         user_id: chat.userId,
-        created_at: new Date().toDateString(),
-        update_at: new Date().toDateString(),
+        created_at: new Date().toISOString(),
+        update_at: new Date().toISOString(),
       },
     ]);
     setMessageText("");
   }
 
-  useEffect(() => {
-    socket.current = io("ws://localhost:8900");
-  }, []);
-
-  useEffect(() => {
-    socket.current.emit("addUser", user?.id, user?.name);
-  }, [user]);
-
-  useEffect(() => {
-    socket.current.on("getMessage", (data) => {
-      setMesseges((prev) => [
-        ...prev,
-        {
-          id: "01",
-          messegeText: data.messageText,
-          conversationId: data.conversationId,
-          user_id: data.user_id,
-          created_at: new Date().toDateString(),
-          update_at: new Date().toDateString(),
-        },
-      ]);
-    });
-
-    return () => socket.current.off("getMessage");
-  }, [socket.current]);
-
   function handleNavegation(root: "user" | "connections" | "chat") {
     setRoot(root);
   }
+
   const comp = () => {
     switch (root) {
       case "user":
@@ -286,8 +282,20 @@ export default function Conversas() {
                             : "items-start bg-slate-100 p-2 rounded-xl rounded-ss-none max-w-[48%] self-start"
                         }`}
                       >
-                        <p className="text-xs p-1 w-[205px] font-normal break-words">
-                          {messege.messegeText}
+                        {messege.messegeText.split("\n").map((line, index) => (
+                          <p
+                            key={index}
+                            className="text-xs p-1 w-[205px] font-normal break-words"
+                          >
+                            {line}
+                          </p>
+                        ))}
+
+                        <p className="text-[10px] absolute bottom-1 right-2">
+                          {new Date(messege.created_at).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
                         </p>
                       </div>
                     ))

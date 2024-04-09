@@ -1,9 +1,8 @@
 import React from "react";
 import { AiOutlineMore } from "react-icons/ai";
+import { BsCameraVideoOff } from "react-icons/bs";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Button } from "../ui/button";
-import { BsCameraVideoOff, BsSearch } from "react-icons/bs";
-import { Input } from "../ui/input";
 
 interface HeaderProps {
   children: React.ReactNode;

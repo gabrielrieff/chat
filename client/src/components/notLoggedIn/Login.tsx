@@ -1,3 +1,6 @@
+import { z } from "zod";
+import { useContext, useState } from "react";
+import { TbEye, TbPasswordUser, TbPhone } from "react-icons/tb";
 import {
   Form,
   FormControl,
@@ -7,12 +10,9 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
-import { z } from "zod";
-import { useContext, useState } from "react";
 import { AuthContext } from "~/context/authContext";
 import { useSchemaLogin } from "~/app/schemas/schemaLogin";
 import { Button } from "../ui/button";
-import { TbEye, TbPasswordUser, TbPhone } from "react-icons/tb";
 
 export function Login() {
   const { signIn } = useContext(AuthContext);

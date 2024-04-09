@@ -1,11 +1,11 @@
 import { useContext } from "react";
+import { z } from "zod";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { PopoverArrow, PopoverContent } from "../ui/popover";
 import { AuthContext } from "~/context/authContext";
 import { useConnection } from "./shemaConnection";
-import { z } from "zod";
 
 export function PopoverNewConnections() {
   const { createConnection } = useContext(AuthContext);

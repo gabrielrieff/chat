@@ -1,3 +1,6 @@
+import { z } from "zod";
+import { useContext, useState } from "react";
+import { TbEye, TbPasswordUser, TbPhone, TbUser } from "react-icons/tb";
 import { useSchemaRegister } from "~/app/schemas/schemaRegister";
 import {
   Form,
@@ -8,18 +11,8 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
-import { z } from "zod";
-import { useContext, useState } from "react";
 import { AuthContext } from "~/context/authContext";
 import { Button } from "../ui/button";
-
-import {
-  TbEye,
-  TbPassword,
-  TbPasswordUser,
-  TbPhone,
-  TbUser,
-} from "react-icons/tb";
 
 export function Register() {
   const { create_user } = useContext(AuthContext);

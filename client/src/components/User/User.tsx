@@ -1,10 +1,9 @@
 import { useContext, useState } from "react";
-import { AuthContext } from "~/context/authContext";
 import { CiEdit } from "react-icons/ci";
+import { AuthContext } from "~/context/authContext";
 
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Input } from "../ui/input";
-import { IoCheckmark, IoCloseOutline } from "react-icons/io5";
 import { Button } from "../ui/button";
 
 export function User() {
@@ -18,7 +17,7 @@ export function User() {
   return (
     <div className="h-full w-[300px] flex flex-col items-center gap-6">
       <Avatar className="w-28 h-28">
-        <AvatarImage src={user?.photo} />
+        <AvatarImage src={user?.photoUrl} className="object-cover" />
         <AvatarFallback>
           {user?.name?.substring(0, 2).toLocaleUpperCase()}
         </AvatarFallback>

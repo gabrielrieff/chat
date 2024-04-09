@@ -6,10 +6,10 @@ import {
 } from "react-icons/bs";
 import { LuLogOut } from "react-icons/lu";
 
+import { useContext } from "react";
 import { Button } from "../ui/button";
 import { Popover, PopoverTrigger } from "../ui/popover";
 import { PopoverNewConnections } from "./PopoverNewConnections";
-import { useContext } from "react";
 import { AuthContext } from "~/context/authContext";
 
 interface MenuMainProps {
