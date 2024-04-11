@@ -8,6 +8,8 @@ export class AuthUserController {
     try {
       const { phone, password } = req.body!;
 
+      console.log(phone, password);
+
       const user = await prismaClient.user.findFirst({
         where: {
           phone: phone,
@@ -21,13 +23,13 @@ export class AuthUserController {
       });
 
       if (!user) {
-        throw new Error("Phone ou senha incorretos");
+        return res.status(400).send("Telefone ou senha incorretos");
       }
 
       const passwordMatch = await compare(password, user.password);
 
       if (!passwordMatch) {
-        throw new Error("Phone ou senha incorretos");
+        return res.status(400).send("Telefone ou senha incorretos");
       }
 
       const token = sign(

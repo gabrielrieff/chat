@@ -12,6 +12,10 @@ export class CreateConversationController {
         where: {
           id: id_user_two,
         },
+        select: {
+          id: true,
+          connections: true,
+        },
       });
 
       if (!isExistUser) {
@@ -35,7 +39,7 @@ export class CreateConversationController {
         },
       });
 
-      const update = await prismaClient.connection.update({
+      const updateMyConnection = await prismaClient.connection.update({
         where: {
           id: connectionId,
         },
@@ -43,6 +47,25 @@ export class CreateConversationController {
           conversationId: conversation.id,
         },
       });
+
+      const filterConnectionUserTwo = await isExistUser.connections.filter(
+        (item) => {
+          return item.id_user_contact === id_user_one;
+        }
+      );
+
+      if (filterConnectionUserTwo) {
+        const update = await prismaClient.connection.update({
+          where: {
+            id: filterConnectionUserTwo[0].id,
+          },
+          data: {
+            conversationId: conversation.id,
+          },
+        });
+
+        console.log(update);
+      }
 
       return res.status(200).json(conversation);
     } catch (error) {

@@ -18,9 +18,16 @@ export class CreateConnection {
         },
       });
 
-      const conversationId = await isUser?.connections.filter(
+      const conversation = await isUser?.connections.filter(
         (item) => item.id_user_contact === userID
       );
+      let consationsId: string | null = "";
+
+      if (conversation !== undefined && conversation?.length >= 1) {
+        consationsId = conversation[0].conversationId;
+      } else {
+        consationsId = null;
+      }
 
       const connection = await prismaClient.connection.create({
         data: {
@@ -30,9 +37,7 @@ export class CreateConnection {
           is_user: isUser ? true : false,
           userId: userID,
           id_user_contact: isUser ? isUser.id : null,
-          conversationId: conversationId
-            ? conversationId[0].conversationId
-            : null,
+          conversationId: consationsId,
         },
       });
 

@@ -25,7 +25,7 @@ export class User {
 
   validatePhone() {
     const regexp = /\(\d{2}\)\s\d{5}-\d{4}/; // Expressão regular corrigida
-
+    console.log(this.phone);
     if (!regexp.test(this.phone)) {
       throw new Error("Número de telefone inválido");
     }
