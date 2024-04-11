@@ -10,12 +10,10 @@ export function Connections() {
 
   const categorizeList = (list: Connection[]) => {
     const categorized: { [key: string]: Connection[] } = {};
-
-    // Ordena a lista em ordem alfabética
-    const sortedList = list.sort((a, b) => a!.name.localeCompare(b!.name));
+    const sortedList = list.sort((a, b) => a.name!.localeCompare(b.name!));
 
     sortedList.forEach((item) => {
-      const firstLetter = item!.name[0].toUpperCase();
+      const firstLetter = item.name![0].toUpperCase();
       if (!categorized[firstLetter]) {
         categorized[firstLetter] = [];
       }
@@ -28,16 +26,18 @@ export function Connections() {
   const categorizedItems = categorizeList(connections!);
 
   return (
-    <div className="h-full px-1 w-[300px] pl-1 flex flex-col items-center gap-1">
-      <span className="mt-4 text-left w-full">Lista de contatos</span>
-
-      <div className="py-1 w-full flex items-center relative">
+    <div className="h-full w-[300px]">
+      <div className="h-[5%] px-3 py-1 flex items-center relative">
         <Input
           type="search"
           className="pl-8 bg-neutral-100 placeholder:text-zinc-400"
           placeholder="Pesquisar uma conversa"
         />
-        <BsSearch size={20} className="absolute text-zinc-400 left-2" />
+        <BsSearch size={20} className="absolute text-zinc-400 left-5" />
+      </div>
+
+      <div className="h-[5%] px-3 py-2 flex items-center text-zinc-600 font-medium">
+        Lista de contatos
       </div>
 
       {Object.keys(categorizedItems).map((letter) => (

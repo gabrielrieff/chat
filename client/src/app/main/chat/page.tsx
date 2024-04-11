@@ -147,7 +147,7 @@ export default function Conversas() {
               {comp() !== undefined ? (
                 comp()
               ) : (
-                <section className="h-full w-full">
+                <section className="h-full w-[300px]">
                   <div className="h-[5%] px-3 py-1 flex items-center relative">
                     <Input
                       type="search"

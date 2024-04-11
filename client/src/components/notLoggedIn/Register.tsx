@@ -13,11 +13,13 @@ import {
 import { Input } from "../ui/input";
 import { AuthContext } from "~/context/authContext";
 import { Button } from "../ui/button";
+import { maskPhone } from "~/mask/phone";
 
 export function Register() {
   const { create_user } = useContext(AuthContext);
 
   const [visibilityPassword, setVisibilityPassword] = useState(false);
+  const [phoneMask, setPhoneMask] = useState("");
 
   const { form, schema } = useSchemaRegister();
   type formDataProps = z.infer<typeof schema>;
@@ -30,6 +32,11 @@ export function Register() {
     const { username, phone, password } = values;
 
     create_user(username, phone, password);
+  }
+
+  function handleMaskPhone(e: string) {
+    const mask = maskPhone(e);
+    setPhoneMask(mask);
   }
 
   return (
@@ -66,9 +73,13 @@ export function Register() {
                     className="pl-8"
                     type="tel"
                     placeholder="(51) 91234-5678"
-                    pattern="^\(\d{2}\) \d{5}-\d{4}$"
-                    title="Exemplo: (51) 91234-5678"
+                    maxLength={15}
                     {...field}
+                    value={phoneMask}
+                    onChange={(e) => {
+                      field.onChange(e);
+                      handleMaskPhone(e.target.value);
+                    }}
                   />
                   <TbPhone
                     size={23}

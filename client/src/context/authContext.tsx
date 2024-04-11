@@ -48,7 +48,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   //user
-  async function create_user(name: string, password: string, phone: string) {
+  async function create_user(name: string, phone: string, password: string) {
     try {
       await api.post("/user", {
         name: name,
@@ -94,6 +94,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         phone: phone_user,
         password: password_user,
       });
+      console.log(response.data);
 
       const {
         id,
@@ -105,7 +106,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         photoFilename,
         photoId,
       } = response.data as User;
-
       setCookie(undefined, "@nextauth.token", token, {
         maxAge: 60 * 60 * 24 * 30,
         path: "/",
@@ -145,14 +145,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       if (name === "" || phone === "") return;
 
+      console.log({
+        name: name,
+        phone: phone,
+      });
+
       const response = await api.post("/connection", {
         name: name,
         phone: phone,
       });
 
-      setConnections((prev) => [...prev, response.data]);
+      console.log(response.data);
 
-      console.log();
+      setConnections((prev) => [...prev, response.data]);
     } catch (error) {}
   }
 
